@@ -19,6 +19,23 @@
             padding: 30px;
             border-radius: 10px;
             margin-bottom: 30px;
+            position: relative;
+        }
+        .header-actions {
+            margin-top: 18px;
+        }
+        .update-btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #5b5ad6;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .update-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
         }
         .stats {
             display: flex;
@@ -139,12 +156,94 @@
             background: #667eea;
             color: white;
         }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal {
+            width: min(680px, 92vw);
+            max-height: 86vh;
+            overflow: auto;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .close-btn {
+            background: transparent;
+            border: none;
+            font-size: 22px;
+            line-height: 1;
+            cursor: pointer;
+            color: #666;
+        }
+        .progress-wrap {
+            width: 100%;
+            height: 16px;
+            background: #e9ecef;
+            border-radius: 999px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #667eea;
+            transition: width 0.3s ease;
+        }
+        .progress-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #555;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        .source-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .source-list li {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f3f5;
+            font-size: 0.92em;
+        }
+        .source-list li:last-child {
+            border-bottom: none;
+        }
+        .source-status {
+            font-weight: bold;
+            text-transform: capitalize;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>🕊️ Local Obituaries</h1>
         <p>Honoring the memories of our community members</p>
+        <div class="header-actions">
+            <button id="update-scraper-btn" class="update-btn" type="button">Update Scraper</button>
+        </div>
     </div>
 
     <div class="stats">
@@ -173,9 +272,30 @@
         <div style="background:white;border-radius:10px;padding:16px;">Loading obituaries...</div>
     </div>
 
+    <div id="scrape-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="scrape-modal-title">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="scrape-modal-title" style="margin: 0;">Updating obituary scraper</h3>
+                <button id="close-scrape-modal" class="close-btn" type="button" aria-label="Close">×</button>
+            </div>
+            <div id="scrape-message">Ready to start.</div>
+            <div class="progress-wrap">
+                <div id="scrape-progress-fill" class="progress-fill"></div>
+            </div>
+            <div class="progress-meta">
+                <span id="scrape-progress-text">0%</span>
+                <span id="scrape-progress-count">0 / 0 sources</span>
+            </div>
+            <ul id="scrape-source-list" class="source-list">
+                <li><span>Waiting for status…</span><span class="source-status">idle</span></li>
+            </ul>
+        </div>
+    </div>
+
     <script>
         let allObituaries = [];
         let selectedHome = 'all';
+        let scrapePollHandle = null;
 
         function formatLastUpdated(value) {
             if (!value) return '--';
@@ -232,6 +352,116 @@
             }).join('');
         }
 
+        function openScrapeModal() {
+            document.getElementById('scrape-modal').classList.add('show');
+        }
+
+        function closeScrapeModal() {
+            const modal = document.getElementById('scrape-modal');
+            const button = document.getElementById('update-scraper-btn');
+            modal.classList.remove('show');
+            if (button.dataset.running !== 'true') {
+                stopScrapePolling();
+            }
+        }
+
+        function stopScrapePolling() {
+            if (scrapePollHandle) {
+                clearInterval(scrapePollHandle);
+                scrapePollHandle = null;
+            }
+        }
+
+        function formatSourceStatus(status) {
+            if (status === 'ok') return 'completed';
+            if (status === 'no-data') return 'completed';
+            if (status === 'error') return 'error';
+            return status || 'pending';
+        }
+
+        function renderScrapeStatus(status) {
+            const total = Number(status.totalSources || 0);
+            const completed = Number(status.completedSources || 0);
+            const percent = total > 0 ? Math.min(100, Math.round((completed / total) * 100)) : (status.state === 'running' ? 10 : 0);
+
+            document.getElementById('scrape-progress-fill').style.width = `${percent}%`;
+            document.getElementById('scrape-progress-text').textContent = `${percent}%`;
+            document.getElementById('scrape-progress-count').textContent = `${completed} / ${total} sources`;
+            document.getElementById('scrape-message').textContent = status.message || 'Working...';
+
+            const list = document.getElementById('scrape-source-list');
+            const sources = Array.isArray(status.sources) ? status.sources : [];
+            if (!sources.length) {
+                list.innerHTML = '<li><span>Preparing sources…</span><span class="source-status">pending</span></li>';
+                return;
+            }
+
+            list.innerHTML = sources.map(source => {
+                const statusText = formatSourceStatus(source.status);
+                const right = statusText === 'completed'
+                    ? `${statusText} • ${source.obituariesScraped || 0} pages`
+                    : (statusText === 'error' ? `${statusText} • ${(source.error || 'failed')}` : statusText);
+
+                return `<li>
+                    <span>${escapeHtml(source.sourceName || source.sourceKey || 'Unknown source')}</span>
+                    <span class="source-status">${escapeHtml(right)}</span>
+                </li>`;
+            }).join('');
+        }
+
+        function setUpdateButtonRunning(running) {
+            const button = document.getElementById('update-scraper-btn');
+            button.dataset.running = running ? 'true' : 'false';
+            button.disabled = running;
+            button.textContent = running ? 'Scraper Running…' : 'Update Scraper';
+        }
+
+        async function pollScrapeStatus() {
+            try {
+                const response = await fetch('/api/scrape/status');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const status = await response.json();
+                renderScrapeStatus(status);
+
+                const isRunning = status.state === 'running';
+                setUpdateButtonRunning(isRunning);
+
+                if (!isRunning) {
+                    stopScrapePolling();
+                    if (status.state === 'completed') {
+                        await loadData();
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load scrape status:', error);
+                stopScrapePolling();
+                setUpdateButtonRunning(false);
+                document.getElementById('scrape-message').textContent = 'Unable to fetch scrape status.';
+            }
+        }
+
+        async function startScrapeUpdate() {
+            openScrapeModal();
+            setUpdateButtonRunning(true);
+
+            try {
+                const response = await fetch('/api/scrape/start', { method: 'POST' });
+                if (!response.ok && response.status !== 409) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                await pollScrapeStatus();
+                if (!scrapePollHandle) {
+                    scrapePollHandle = setInterval(pollScrapeStatus, 1500);
+                }
+            } catch (error) {
+                console.error('Failed to start scrape:', error);
+                setUpdateButtonRunning(false);
+                document.getElementById('scrape-message').textContent = 'Unable to start scraper update.';
+            }
+        }
+
         function buildFilters() {
             const filterContainer = document.getElementById('funeral-home-filter');
             const counts = {};
@@ -279,7 +509,16 @@
             }
         }
 
+        document.getElementById('update-scraper-btn').addEventListener('click', startScrapeUpdate);
+        document.getElementById('close-scrape-modal').addEventListener('click', closeScrapeModal);
+        document.getElementById('scrape-modal').addEventListener('click', (event) => {
+            if (event.target.id === 'scrape-modal') {
+                closeScrapeModal();
+            }
+        });
+
         loadData();
+        pollScrapeStatus();
     </script>
 </body>
 </html>
