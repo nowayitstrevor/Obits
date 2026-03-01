@@ -3,19 +3,21 @@
 Simple API server to serve obituary data for the website
 """
 
-from flask import Flask, jsonify, render_template_string
+from flask import Flask, jsonify
 from flask_cors import CORS
 import json
 import os
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for web requests
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Load the obituary data
 def load_obituary_data():
     """Load the unified obituary dataset."""
     try:
-        with open('website_obituaries.json', 'r', encoding='utf-8') as f:
+        data_path = os.path.join(BASE_DIR, 'website_obituaries.json')
+        with open(data_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except FileNotFoundError:
         return {"error": "Obituary data not found. Please run bundle_for_website.py first."}
@@ -24,7 +26,8 @@ def load_obituary_data():
 def index():
     """Serve the main website page."""
     try:
-        with open('website_preview.html', 'r', encoding='utf-8') as f:
+        html_path = os.path.join(BASE_DIR, 'website_preview.html')
+        with open(html_path, 'r', encoding='utf-8') as f:
             html_content = f.read()
         return html_content
     except FileNotFoundError:
@@ -94,7 +97,8 @@ if __name__ == '__main__':
     print("=" * 50)
     
     # Check if data files exist
-    if os.path.exists('website_obituaries.json'):
+    data_path = os.path.join(BASE_DIR, 'website_obituaries.json')
+    if os.path.exists(data_path):
         data = load_obituary_data()
         if "summary" in data:
             summary = data["summary"]
@@ -107,14 +111,15 @@ if __name__ == '__main__':
         print("   Run 'py bundle_for_website.py' first to create the dataset")
     
     print("\n🚀 Server starting...")
-    print("   📱 Website: http://localhost:5000")
-    print("   🔗 API: http://localhost:5000/api/obituaries")
-    print("   📊 Status: http://localhost:5000/api/status")
+    port = int(os.environ.get('PORT', 5000))
+    print(f"   📱 Website: http://localhost:{port}")
+    print(f"   🔗 API: http://localhost:{port}/api/obituaries")
+    print(f"   📊 Status: http://localhost:{port}/api/status")
     print("\n   Press Ctrl+C to stop the server")
     print("=" * 50)
     
     try:
-        app.run(debug=True, host='0.0.0.0', port=5000)
+        app.run(debug=False, host='0.0.0.0', port=port)
     except KeyboardInterrupt:
         print("\n👋 Server stopped by user")
     except Exception as e:
