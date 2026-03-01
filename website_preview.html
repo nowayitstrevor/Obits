@@ -376,6 +376,7 @@
             if (status === 'ok') return 'completed';
             if (status === 'no-data') return 'completed';
             if (status === 'error') return 'error';
+            if (status === 'skipped') return 'skipped';
             return status || 'pending';
         }
 
@@ -387,7 +388,8 @@
             document.getElementById('scrape-progress-fill').style.width = `${percent}%`;
             document.getElementById('scrape-progress-text').textContent = `${percent}%`;
             document.getElementById('scrape-progress-count').textContent = `${completed} / ${total} sources`;
-            document.getElementById('scrape-message').textContent = status.message || 'Working...';
+            const modeLabel = status.safeMode ? ' (safe mode)' : '';
+            document.getElementById('scrape-message').textContent = `${status.message || 'Working...'}${modeLabel}`;
 
             const list = document.getElementById('scrape-source-list');
             const sources = Array.isArray(status.sources) ? status.sources : [];
@@ -400,7 +402,11 @@
                 const statusText = formatSourceStatus(source.status);
                 const right = statusText === 'completed'
                     ? `${statusText} • ${source.obituariesScraped || 0} pages`
-                    : (statusText === 'error' ? `${statusText} • ${(source.error || 'failed')}` : statusText);
+                    : (statusText === 'error'
+                        ? `${statusText} • ${(source.error || 'failed')}`
+                        : (statusText === 'skipped'
+                            ? `${statusText} • ${(source.error || 'safe mode')}`
+                            : statusText));
 
                 return `<li>
                     <span>${escapeHtml(source.sourceName || source.sourceKey || 'Unknown source')}</span>

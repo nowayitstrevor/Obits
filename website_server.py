@@ -23,6 +23,8 @@ SCRAPE_STATUS = {
     "completedSources": 0,
     "currentSourceKey": None,
     "currentSourceName": None,
+    "safeMode": False,
+    "skippedSources": 0,
     "totalObituaries": 0,
     "sources": [],
 }
@@ -54,23 +56,121 @@ def _build_initial_source_status(sources: dict[str, dict]) -> list[dict]:
     return items
 
 
+def _is_truthy(value: str | None) -> bool:
+    if value is None:
+        return False
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _is_falsy(value: str | None) -> bool:
+    if value is None:
+        return False
+    return value.strip().lower() in {"0", "false", "no", "off"}
+
+
+def is_railway_environment() -> bool:
+    return bool(os.environ.get("RAILWAY_PROJECT_ID") or os.environ.get("RAILWAY_ENVIRONMENT"))
+
+
+def is_scraper_safe_mode_enabled() -> bool:
+    configured = os.environ.get("SCRAPER_SAFE_MODE")
+    if _is_truthy(configured):
+        return True
+    if _is_falsy(configured):
+        return False
+    return is_railway_environment()
+
+
+def split_sources_for_safe_mode(all_sources: dict[str, dict], safe_mode: bool) -> tuple[dict[str, dict], list[dict], set[str]]:
+    runnable_sources: dict[str, dict] = {}
+    status_items: list[dict] = []
+    skipped_keys: set[str] = set()
+
+    for source_key, config in all_sources.items():
+        source_name = config.get("name", source_key)
+        scraper_type = str(config.get("scraper_type", "")).lower()
+        if safe_mode and scraper_type == "selenium":
+            skipped_keys.add(source_key)
+            status_items.append(
+                {
+                    "sourceKey": source_key,
+                    "sourceName": source_name,
+                    "status": "skipped",
+                    "obituariesScraped": 0,
+                    "durationMs": 0,
+                    "error": "Skipped in safe mode (selenium source).",
+                }
+            )
+            continue
+
+        runnable_sources[source_key] = config
+        status_items.append(
+            {
+                "sourceKey": source_key,
+                "sourceName": source_name,
+                "status": "pending",
+                "obituariesScraped": 0,
+                "durationMs": 0,
+                "error": None,
+            }
+        )
+
+    return runnable_sources, status_items, skipped_keys
+
+
+def load_previous_selected_records(selected_scraper) -> list:
+    output_path = selected_scraper.OUTPUT_PATH
+    if not output_path.exists():
+        return []
+
+    try:
+        payload = json.loads(output_path.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+
+    records: list = []
+    for item in payload.get("obituaries", []):
+        if not isinstance(item, dict):
+            continue
+        try:
+            records.append(selected_scraper.ObituaryRecord(**item))
+        except Exception:
+            continue
+    return records
+
+
+def merge_records_with_previous(new_records: list, previous_records: list, refreshed_source_keys: set[str]) -> list:
+    merged = list(new_records)
+    for item in previous_records:
+        source_key = getattr(item, "sourceKey", None)
+        if source_key in refreshed_source_keys:
+            continue
+        merged.append(item)
+    return merged
+
+
 def run_scrape_job() -> None:
     try:
         import scrape_selected_obituaries as selected_scraper
         import bundle_for_website
 
-        sources = selected_scraper.load_selected_sources(include_inactive=False, source_keys=None)
-        source_status = _build_initial_source_status(sources)
+        all_sources = selected_scraper.load_selected_sources(include_inactive=False, source_keys=None)
+        safe_mode = is_scraper_safe_mode_enabled()
+        sources, source_status, skipped_keys = split_sources_for_safe_mode(all_sources, safe_mode=safe_mode)
+        skipped_count = len(skipped_keys)
+        started_message = "Preparing sources in safe mode..." if safe_mode else "Preparing sources..."
         _set_scrape_status(
             {
                 "state": "running",
-                "message": "Preparing sources...",
+                "message": started_message,
                 "startedAt": now_iso(),
                 "finishedAt": None,
                 "totalSources": len(source_status),
-                "completedSources": 0,
+                "completedSources": skipped_count,
                 "currentSourceKey": None,
                 "currentSourceName": None,
+                "safeMode": safe_mode,
+                "skippedSources": skipped_count,
                 "totalObituaries": 0,
                 "sources": source_status,
             }
@@ -114,20 +214,41 @@ def run_scrape_job() -> None:
                     item["durationMs"] = source_result.durationMs
                     item["error"] = source_result.error
                     break
-                SCRAPE_STATUS["completedSources"] = index + 1
+                SCRAPE_STATUS["completedSources"] = skipped_count + index + 1
                 SCRAPE_STATUS["totalObituaries"] = len(all_records)
 
-        selected_scraper.write_output(all_records, all_results)
+        refreshed_keys = set(sources.keys())
+        previous_records = load_previous_selected_records(selected_scraper)
+        merged_records = merge_records_with_previous(all_records, previous_records, refreshed_source_keys=refreshed_keys)
+
+        for source_key in skipped_keys:
+            source_name = all_sources.get(source_key, {}).get("name", source_key)
+            all_results.append(
+                selected_scraper.SourceScrapeResult(
+                    source=source_name,
+                    sourceKey=source_key,
+                    status="skipped",
+                    listingUrl=str(all_sources.get(source_key, {}).get("obituaries_url", "")),
+                    pagesDiscovered=0,
+                    obituariesScraped=0,
+                    durationMs=0,
+                    error="Skipped in safe mode (selenium source).",
+                )
+            )
+
+        selected_scraper.write_output(merged_records, all_results)
         bundle_for_website.create_unified_dataset()
+
+        mode_suffix = " (safe mode)" if safe_mode else ""
 
         _set_scrape_status(
             {
                 "state": "completed",
-                "message": "Scrape and bundle complete.",
+                "message": f"Scrape and bundle complete{mode_suffix}.",
                 "finishedAt": now_iso(),
                 "currentSourceKey": None,
                 "currentSourceName": None,
-                "totalObituaries": len(all_records),
+                "totalObituaries": len(merged_records),
             }
         )
     except Exception as error:
@@ -243,6 +364,8 @@ def start_scrape():
                 "completedSources": 0,
                 "currentSourceKey": None,
                 "currentSourceName": None,
+                "safeMode": False,
+                "skippedSources": 0,
                 "totalObituaries": 0,
                 "sources": [],
             }
