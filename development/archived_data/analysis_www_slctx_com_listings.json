@@ -1,0 +1,357 @@
+{
+  "url": "https://www.slctx.com/listings",
+  "status": "success",
+  "requires_javascript": false,
+  "platform_type": "tribute",
+  "obituary_section": {
+    "found": true,
+    "url_patterns": [
+      "/obituary/"
+    ],
+    "section_selectors": [],
+    "link_count": 70,
+    "sample_links": [
+      {
+        "url": "https://www.slctx.com/why-choose-us",
+        "text": "Why Choose Us",
+        "href": "/why-choose-us"
+      },
+      {
+        "url": "https://www.slctx.com/privacy-policy",
+        "text": "Privacy Policy",
+        "href": "/privacy-policy"
+      },
+      {
+        "url": "https://www.slctx.com/general-price-list",
+        "text": "General Price List",
+        "href": "/general-price-list"
+      },
+      {
+        "url": "https://www.slctx.com/prearrangements-form",
+        "text": "Pre-Arrangements Form",
+        "href": "/prearrangements-form"
+      },
+      {
+        "url": "https://www.slctx.com/veterans-headstones",
+        "text": "Veterans Headstones",
+        "href": "/veterans-headstones"
+      }
+    ],
+    "navigation_links": [
+      {
+        "url": "https://www.slctx.com/listings",
+        "text": "Obituaries",
+        "href": "/listings"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Michael-Gomez",
+        "text": "",
+        "href": "/obituary/Michael-Gomez"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Michael-Gomez",
+        "text": "View",
+        "href": "/obituary/Michael-Gomez"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Michael-Gomez",
+        "text": "Michael Gomez",
+        "href": "/obituary/Michael-Gomez"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Michael-Gomez",
+        "text": "View",
+        "href": "/obituary/Michael-Gomez"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Michael-Gomez/send-flowers",
+        "text": "Send Flowers",
+        "href": "/obituary/Michael-Gomez/send-flowers"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Jazsima-Davis",
+        "text": "",
+        "href": "/obituary/Jazsima-Davis"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Jazsima-Davis",
+        "text": "View",
+        "href": "/obituary/Jazsima-Davis"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Jazsima-Davis",
+        "text": "Jazsima Davis",
+        "href": "/obituary/Jazsima-Davis"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Jazsima-Davis",
+        "text": "View",
+        "href": "/obituary/Jazsima-Davis"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Jazsima-Davis/send-flowers",
+        "text": "Send Flowers",
+        "href": "/obituary/Jazsima-Davis/send-flowers"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Kenneth-Mays",
+        "text": "",
+        "href": "/obituary/Kenneth-Mays"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Kenneth-Mays",
+        "text": "View",
+        "href": "/obituary/Kenneth-Mays"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Kenneth-Mays",
+        "text": "Kenneth Mays",
+        "href": "/obituary/Kenneth-Mays"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Kenneth-Mays",
+        "text": "View",
+        "href": "/obituary/Kenneth-Mays"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Kenneth-Mays/send-flowers",
+        "text": "Send Flowers",
+        "href": "/obituary/Kenneth-Mays/send-flowers"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Apryl-Tucker",
+        "text": "",
+        "href": "/obituary/Apryl-Tucker"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Apryl-Tucker",
+        "text": "View",
+        "href": "/obituary/Apryl-Tucker"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Apryl-Tucker",
+        "text": "Apryl Tucker",
+        "href": "/obituary/Apryl-Tucker"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Apryl-Tucker",
+        "text": "View",
+        "href": "/obituary/Apryl-Tucker"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Apryl-Tucker/send-flowers",
+        "text": "Send Flowers",
+        "href": "/obituary/Apryl-Tucker/send-flowers"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Dorothy-Norman",
+        "text": "",
+        "href": "/obituary/Dorothy-Norman"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Dorothy-Norman",
+        "text": "View",
+        "href": "/obituary/Dorothy-Norman"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Dorothy-Norman",
+        "text": "Dorothy Norman",
+        "href": "/obituary/Dorothy-Norman"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Dorothy-Norman",
+        "text": "View",
+        "href": "/obituary/Dorothy-Norman"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Dorothy-Norman/send-flowers",
+        "text": "Send Flowers",
+        "href": "/obituary/Dorothy-Norman/send-flowers"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Eddie-Satchell",
+        "text": "",
+        "href": "/obituary/Eddie-Satchell"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Eddie-Satchell",
+        "text": "View",
+        "href": "/obituary/Eddie-Satchell"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Eddie-Satchell",
+        "text": "Eddie Satchell",
+        "href": "/obituary/Eddie-Satchell"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Eddie-Satchell",
+        "text": "View",
+        "href": "/obituary/Eddie-Satchell"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Eddie-Satchell/send-flowers",
+        "text": "Send Flowers",
+        "href": "/obituary/Eddie-Satchell/send-flowers"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Timothy-Bowie",
+        "text": "",
+        "href": "/obituary/Timothy-Bowie"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Timothy-Bowie",
+        "text": "View",
+        "href": "/obituary/Timothy-Bowie"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Timothy-Bowie",
+        "text": "Timothy Bowie",
+        "href": "/obituary/Timothy-Bowie"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Timothy-Bowie",
+        "text": "View",
+        "href": "/obituary/Timothy-Bowie"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Timothy-Bowie/send-flowers",
+        "text": "Send Flowers",
+        "href": "/obituary/Timothy-Bowie/send-flowers"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Jalailah-Cooper",
+        "text": "",
+        "href": "/obituary/Jalailah-Cooper"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Jalailah-Cooper",
+        "text": "View",
+        "href": "/obituary/Jalailah-Cooper"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Jalailah-Cooper",
+        "text": "Jalailah Cooper",
+        "href": "/obituary/Jalailah-Cooper"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Jalailah-Cooper",
+        "text": "View",
+        "href": "/obituary/Jalailah-Cooper"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Jalailah-Cooper/send-flowers",
+        "text": "Send Flowers",
+        "href": "/obituary/Jalailah-Cooper/send-flowers"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Charles-Washington",
+        "text": "",
+        "href": "/obituary/Charles-Washington"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Charles-Washington",
+        "text": "View",
+        "href": "/obituary/Charles-Washington"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Charles-Washington",
+        "text": "Charles Washington",
+        "href": "/obituary/Charles-Washington"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Charles-Washington",
+        "text": "View",
+        "href": "/obituary/Charles-Washington"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Charles-Washington/send-flowers",
+        "text": "Send Flowers",
+        "href": "/obituary/Charles-Washington/send-flowers"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Henry-Smith",
+        "text": "",
+        "href": "/obituary/Henry-Smith"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Henry-Smith",
+        "text": "View",
+        "href": "/obituary/Henry-Smith"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Henry-Smith",
+        "text": "Henry Smith",
+        "href": "/obituary/Henry-Smith"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Henry-Smith",
+        "text": "View",
+        "href": "/obituary/Henry-Smith"
+      },
+      {
+        "url": "https://www.slctx.com/obituary/Henry-Smith/send-flowers",
+        "text": "Send Flowers",
+        "href": "/obituary/Henry-Smith/send-flowers"
+      },
+      {
+        "url": "https://www.slctx.com/listings",
+        "text": "All Obituaries",
+        "href": "/listings"
+      },
+      {
+        "url": "https://www.tributearchive.com",
+        "text": "TA",
+        "href": "https://www.tributearchive.com"
+      }
+    ],
+    "container_selectors": [
+      ".sitemapsubitem",
+      ".sitemapitem"
+    ]
+  },
+  "page_structure": {
+    "has_header": false,
+    "has_navigation": false,
+    "has_sidebar": false,
+    "has_footer": false,
+    "main_content_selectors": [],
+    "total_links": 126,
+    "total_images": 1,
+    "has_pagination": true
+  },
+  "suggested_config": {
+    "scraper_type": "enhanced_generic",
+    "requires_javascript": false,
+    "custom_selectors": {
+      "obituary_list": ".sitemapsubitem, .sitemapitem"
+    },
+    "url_patterns": {
+      "obituary_indicators": [
+        "/obituary/"
+      ]
+    },
+    "skip_patterns": [
+      "/send-flowers",
+      "/flowers",
+      "/sympathy",
+      "/plant-tree",
+      "/share",
+      "/guestbook",
+      "/guest-book",
+      "/print",
+      "/tribute-store",
+      "/memory",
+      "/candles"
+    ],
+    "validation_rules": {
+      "min_content_length": 100,
+      "required_elements": [
+        "name"
+      ]
+    }
+  },
+  "issues_found": [],
+  "recommendations": [
+    "❌ Website analysis failed. Manual investigation required."
+  ]
+}

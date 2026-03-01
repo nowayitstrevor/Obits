@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Obits Daily</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 95%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .tab-container {
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0;
+        }
+        
+        .tabs {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .tab {
+            background: transparent;
+            border: none;
+            padding: 15px 25px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background: #e9ecef;
+        }
+        
+        .tab.active {
+            border-bottom-color: #007bff;
+            background: white;
+            color: #007bff;
+            font-weight: 500;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .search-controls {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .filter-select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+        
+        .btn-success {
+            background: #28a745;
+        }
+        
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        /* Flag dropdown styles */
+        .flag-dropdown {
+            position: relative;
+            display: inline-block;
+            margin-left: 8px;
+            z-index: 10000;
+        }
+
+        @media (max-width: 768px) {
+            .flag-dropdown-content {
+                right: auto;
+                left: 0;
+                min-width: 250px;
+            }
+        }
+
+        .flag-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: background-color 0.2s ease;
+            font-weight: 500;
+        }
+
+        .flag-btn:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .flag-dropdown-content {
+            display: none;
+            position: fixed;
+            background-color: white;
+            min-width: 280px;
+            max-width: 350px;
+            box-shadow: 0px 12px 24px 0px rgba(0,0,0,0.5);
+            z-index: 99999;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            margin-top: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .flag-dropdown-content.show {
+            display: block;
+        }
+
+        .flag-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            line-height: 1.4;
+            transition: background-color 0.2s ease;
+        }
+
+        .flag-option:last-child {
+            border-bottom: none;
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+        }
+
+        .flag-option:first-child {
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+        }
+
+        .flag-option:hover {
+            background-color: #f8f9fa;
+        }
+
+        .flag-option.severity-high {
+            border-left: 4px solid #dc3545;
+            background-color: #fff5f5;
+        }
+
+        .flag-option.severity-high:hover {
+            background-color: #fee;
+        }
+
+        .flag-option.severity-medium {
+            border-left: 4px solid #ffc107;
+            background-color: #fffbf0;
+        }
+
+        .flag-option.severity-medium:hover {
+            background-color: #fff8e1;
+        }
+
+        .flag-option.severity-low {
+            border-left: 4px solid #28a745;
+            background-color: #f8fff8;
+        }
+
+        .flag-option.severity-low:hover {
+            background-color: #f0fff0;
+        }
+
+        .flag-option-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .flag-option-description {
+            font-size: 11px;
+            color: #666;
+            margin-top: 3px;
+            line-height: 1.3;
+        }
+
+        .flag-indicator {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .status {
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        .obituary-list {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: normal;
+            gap: 30px;
+        }
+        
+        .obituary-card {
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            background: white;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: row;
+            min-height: 200px;
+            width: 100%;
+            max-width: none;
+            position: relative;
+        }
+        
+        .obituary-card:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .obituary-card.archived {
+            opacity: 0.7;
+            border-left: 5px solid #6c757d;
+        }
+        
+        .obituary-photo {
+            width: 140px;
+            height: 160px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 8px 0 0 8px;
+            flex-shrink: 0;
+        }
+        
+        .obituary-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+        
+        .obituary-photo.no-photo {
+            background: linear-gradient(135deg, #e9ecef, #f8f9fa);
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .obituary-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+        }
+        
+        .obituary-header {
+            margin-bottom: 15px;
+        }
+        
+        .obituary-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            line-height: 1.2;
+        }
+        
+        .obituary-dates {
+            color: #495057;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .obituary-age {
+            color: #6c757d;
+            font-size: 0.95em;
+            margin-bottom: 15px;
+        }
+        
+        .obituary-funeral-home {
+            color: #007bff;
+            font-weight: 500;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        
+        .obituary-summary {
+            color: #495057;
+            font-style: italic;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            flex: 1;
+        }
+        
+        .obituary-actions {
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .obituary-link {
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: background 0.3s;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .obituary-link:hover {
+            background: #0056b3;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .obituary-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8em;
+            color: #6c757d;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f1f3f4;
+        }
+        
+        .funeral-home-management {
+            margin-bottom: 20px;
+        }
+        
+        .funeral-home-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .funeral-home-card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
+        }
+        
+        .funeral-home-card.inactive {
+            background: #f8f9fa;
+            opacity: 0.7;
+        }
+        
+        .funeral-home-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .funeral-home-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            flex: 1;
+        }
+        
+        .funeral-home-status {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .funeral-home-details {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .funeral-home-actions {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .form-checkbox {
+            margin-right: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                width: 98%;
+                margin: 10px auto;
+            }
+            
+            .obituary-list {
+                padding: 10px;
+                gap: 15px;
+            }
+            
+            .obituary-card {
+                margin: 10px;
+                flex-direction: column;
+                min-height: auto;
+                max-width: 100%;
+            }
+            
+            .obituary-photo {
+                width: 100%;
+                height: 100px;
+                border-radius: 8px 8px 0 0;
+            }
+            
+            .obituary-content {
+                padding: 15px;
+            }
+            
+            .obituary-name {
+                font-size: 1.2em;
+            }
+            
+            .obituary-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .funeral-home-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-input {
+                min-width: 100%;
+            }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            margin: 0 0 10px 0;
+            color: #495057;
+        }
+        
+        .empty-state p {
+            margin: 0;
+            font-style: italic;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        
+        .loading::after {
+            content: "";
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .stats {
+            padding: 15px 20px;
+            background: #e9ecef;
+            border-bottom: 1px solid #dee2e6;
+            text-align: center;
+        }
+        
+        .stat-item {
+            display: inline-block;
+            margin: 0 20px;
+            color: #495057;
+        }
+        
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .log-output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Enhanced Obits Daily</h1>
+            <p>Comprehensive obituary monitoring across the Waco, Texas area</p>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('obituaries')">Obituaries</button>
+                <button class="tab" onclick="switchTab('funeral-homes')">Funeral Homes</button>
+                <button class="tab" onclick="switchTab('archived')">Archive</button>
+                <button class="tab" onclick="switchTab('stats')">Statistics</button>
+            </div>
+        </div>
+        
+        <!-- Obituaries Tab -->
+        <div id="obituaries-tab" class="tab-content active">
+            <div class="search-controls">
+                <input type="text" id="search-input" class="search-input" placeholder="Search obituaries by name, funeral home, or date...">
+                <select id="funeral-home-filter" class="filter-select">
+                    <option value="">All Funeral Homes</option>
+                </select>
+                <button class="btn" onclick="searchObituaries()">Search</button>
+                <button class="btn btn-warning" onclick="clearSearch()">Clear</button>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-success" onclick="refreshObituaries()">Refresh List</button>
+                <button class="btn" onclick="scrapeAll()">Scrape All Active</button>
+                <button class="btn btn-warning" onclick="toggleLogs()">Show/Hide Logs</button>
+            </div>
+            
+            <div id="status" class="status"></div>
+            <div id="log-output" class="log-output"></div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="total-obituaries">-</div>
+                    <div>Total Obituaries</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="last-updated">-</div>
+                    <div>Last Updated</div>
+                </div>
+            </div>
+            
+            <div class="obituary-list">
+                <div id="loading" class="loading">Loading obituaries...</div>
+                <div id="obituaries"></div>
+            </div>
+        </div>
+        
+        <!-- Funeral Homes Management Tab -->
+        <div id="funeral-homes-tab" class="tab-content">
+            <div class="controls">
+                <button class="btn btn-success" onclick="showAddFuneralHomeModal()">Add Funeral Home</button>
+                <button class="btn" onclick="refreshFuneralHomes()">Refresh List</button>
+            </div>
+            
+            <div class="funeral-home-management">
+                <div id="funeral-homes-list" class="funeral-home-list">
+                    <!-- Funeral homes will be loaded here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Archive Tab -->
+        <div id="archived-tab" class="tab-content">
+            <div class="search-controls">
+                <input type="text" id="archive-search-input" class="search-input" placeholder="Search archived obituaries...">
+                <button class="btn" onclick="searchArchivedObituaries()">Search Archive</button>
+                <button class="btn btn-warning" onclick="clearArchiveSearch()">Clear</button>
+            </div>
+            
+            <div class="obituary-list">
+                <div id="archived-obituaries"></div>
+            </div>
+        </div>
+        
+        <!-- Statistics Tab -->
+        <div id="stats-tab" class="tab-content">
+            <div id="statistics-content">
+                <!-- Statistics will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Funeral Home Modal -->
+    <div id="add-funeral-home-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Funeral Home</h3>
+                <span class="close" onclick="closeAddFuneralHomeModal()">&times;</span>
+            </div>
+            <form id="add-funeral-home-form">
+                <div class="form-group">
+                    <label class="form-label">Name *</label>
+                    <input type="text" id="funeral-home-name" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Website URL *</label>
+                    <input type="url" id="funeral-home-url" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <input type="text" id="funeral-home-address" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" id="funeral-home-active" class="form-checkbox">
+                        Activate immediately
+                    </label>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">Add Funeral Home</button>
+                    <button type="button" class="btn" onclick="closeAddFuneralHomeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let logVisible = false;
+        let currentSearch = '';
+        let currentFuneralHomeFilter = '';
+        
+        // Tab Management
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Activate selected tab
+            event.target.classList.add('active');
+            
+            // Load content based on tab
+            if (tabName === 'obituaries') {
+                refreshObituaries();
+            } else if (tabName === 'funeral-homes') {
+                refreshFuneralHomes();
+            } else if (tabName === 'archived') {
+                loadArchivedObituaries();
+            } else if (tabName === 'stats') {
+                loadStatistics();
+            }
+        }
+        
+        function showStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+            
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 5000);
+        }
+        
+        function showLogs(content) {
+            const logOutput = document.getElementById('log-output');
+            logOutput.textContent = content;
+            if (logVisible) {
+                logOutput.style.display = 'block';
+            }
+        }
+        
+        function toggleLogs() {
+            const logOutput = document.getElementById('log-output');
+            logVisible = !logVisible;
+            logOutput.style.display = logVisible ? 'block' : 'none';
+        }
+        
+        // Search functionality
+        function searchObituaries() {
+            currentSearch = document.getElementById('search-input').value;
+            currentFuneralHomeFilter = document.getElementById('funeral-home-filter').value;
+            refreshObituaries();
+        }
+        
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('funeral-home-filter').value = '';
+            currentSearch = '';
+            currentFuneralHomeFilter = '';
+            refreshObituaries();
+        }
+        
+        async function refreshObituaries() {
+            const loading = document.getElementById('loading');
+            const obituariesDiv = document.getElementById('obituaries');
+            
+            loading.style.display = 'block';
+            obituariesDiv.innerHTML = '';
+            
+            try {
+                let url = '/api/obituaries';
+                const params = new URLSearchParams();
+                
+                if (currentSearch) {
+                    params.append('search', currentSearch);
+                }
+                if (currentFuneralHomeFilter) {
+                    params.append('funeral_home', currentFuneralHomeFilter);
+                }
+                
+                if (params.toString()) {
+                    url += '?' + params.toString();
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                document.getElementById('total-obituaries').textContent = data.total;
+                document.getElementById('last-updated').textContent = data.last_updated;
+                
+                // Update funeral home filter options
+                updateFuneralHomeFilter();
+                
+                if (data.obituaries.length === 0) {
+                    obituariesDiv.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🕊️</div>
+                            <h3>No obituaries found</h3>
+                            <p>${currentSearch ? 'Try adjusting your search terms' : 'Try running a scrape to collect obituary listings'}</p>
+                        </div>
+                    `;
+                } else {
+                    data.obituaries.forEach(obituary => {
+                        const card = document.createElement('div');
+                        card.className = 'obituary-card' + (obituary.archived ? ' archived' : '');
+                        
+                        // Build date display
+                        let dateDisplay = '';
+                        if (obituary.birth_date && obituary.death_date) {
+                            dateDisplay = `${obituary.birth_date} - ${obituary.death_date}`;
+                        } else if (obituary.death_date) {
+                            dateDisplay = obituary.death_date;
+                        } else if (obituary.birth_date) {
+                            dateDisplay = `Born ${obituary.birth_date}`;
+                        } else {
+                            dateDisplay = 'Dates unknown';
+                        }
+                        
+                        // Build age display
+                        let ageDisplay = '';
+                        if (obituary.age) {
+                            ageDisplay = `<div class="obituary-age">Age ${obituary.age}</div>`;
+                        }
+                        
+                        // Build photo section
+                        let photoHtml = '';
+                        if (obituary.photo_url) {
+                            photoHtml = `
+                                <div class="obituary-photo">
+                                    <img src="${obituary.photo_url}" alt="${obituary.name}" onerror="this.parentElement.classList.add('no-photo'); this.parentElement.innerHTML='<div>Photo not available</div>';">
+                                </div>
+                            `;
+                        } else {
+                            photoHtml = `
+                                <div class="obituary-photo no-photo">
+                                    <div>No photo available</div>
+                                </div>
+                            `;
+                        }
+                        
+                        // Build summary display
+                        let summaryHtml = '';
+                        if (obituary.summary) {
+                            summaryHtml = `<div class="obituary-summary">"${obituary.summary}"</div>`;
+                        }
+                        
+                        // Build action buttons - FIXED ARCHIVE FUNCTIONALITY
+                        let actionButtons = `<a href="${obituary.url}" target="_blank" class="obituary-link">View Full Obituary</a>`;
+                        if (!obituary.archived) {
+                            // Get the funeral home ID from the config
+                            actionButtons += `<button class="btn btn-sm btn-warning" onclick="archiveObituary('${obituary.id}', '${getHomeFolderFromName(obituary.funeral_home)}')">Archive</button>`;
+                        }
+                        
+                        // Add flag button for admin
+                        const flagCount = obituary.flags ? obituary.flags.filter(f => !f.resolved).length : 0;
+                        const flagIndicator = flagCount > 0 ? `<span class="flag-indicator">${flagCount}</span>` : '';
+                        actionButtons += `
+                            <button class="btn btn-sm btn-danger" onclick="showFlagDialog('${obituary.url}', '${obituary.funeral_home}')">
+                                🚩 Flag ${flagIndicator}
+                            </button>
+                        `;
+                        
+                        card.innerHTML = `
+                            ${photoHtml}
+                            <div class="obituary-content">
+                                <div class="obituary-header">
+                                    <div class="obituary-name">${obituary.name}</div>
+                                    <div class="obituary-dates">${dateDisplay}</div>
+                                    ${ageDisplay}
+                                </div>
+                                <div class="obituary-funeral-home">${obituary.funeral_home}</div>
+                                ${summaryHtml}
+                                <div class="obituary-actions">
+                                    ${actionButtons}
+                                </div>
+                                <div class="obituary-meta">
+                                    <span>ID: ${obituary.id}</span>
+                                    <span>${obituary.archived ? 'Archived:' : 'Updated:'} ${obituary.last_seen}</span>
+                                </div>
+                            </div>
+                        `;
+                        obituariesDiv.appendChild(card);
+                    });
+                }
+                
+                showStatus(`Loaded ${data.total} obituaries`, 'success');
+            } catch (error) {
+                showStatus(`Error loading obituaries: ${error.message}`, 'error');
+                obituariesDiv.innerHTML = '<p style="text-align: center; color: #dc3545; padding: 40px;">Error loading obituaries. Please try again.</p>';
+            }
+            
+            loading.style.display = 'none';
+        }
+        
+        // Helper function to get funeral home ID from name
+        function getHomeFolderFromName(funeralHomeName) {
+            // Simple mapping - in production this should be more robust
+            const nameMap = {
+                'Lake Shore Funeral Home': 'lakeshore',
+                'Aderhold Funeral Home': 'aderhold',
+                'Grace Gardens Funeral Home': 'gracegardens',
+                'McDowell Funeral Home': 'mcdowell',
+                'Pecan Grove Funeral Home': 'pecangrove',
+                'WHB Family Funeral Home': 'whbfamily',
+                'SLC Texas Funeral Services': 'slctx',
+                'Oak Crest Funeral Home': 'oakcrest',
+                'Foss Funeral Home': 'foss',
+                'Robertson Funeral Home': 'robertson',
+                'Waco Funeral Home Memorial Park': 'wacofhmp'
+            };
+            
+            return nameMap[funeralHomeName] || 'unknown';
+        }
+        
+        async function updateFuneralHomeFilter() {
+            try {
+                const response = await fetch('/api/funeral-homes');
+                const funeralHomes = await response.json();
+                
+                const select = document.getElementById('funeral-home-filter');
+                // Keep current selection
+                const currentValue = select.value;
+                
+                // Clear existing options except "All"
+                select.innerHTML = '<option value="">All Funeral Homes</option>';
+                
+                // Add funeral home options
+                Object.entries(funeralHomes).forEach(([id, home]) => {
+                    if (home.active) {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.textContent = home.name;
+                        select.appendChild(option);
+                    }
+                });
+                
+                // Restore selection
+                select.value = currentValue;
+            } catch (error) {
+                console.error('Error updating funeral home filter:', error);
+            }
+        }
+        
+        // Funeral Home Management
+        async function refreshFuneralHomes() {
+            try {
+                const response = await fetch('/api/funeral-homes');
+                const funeralHomes = await response.json();
+                
+                const container = document.getElementById('funeral-homes-list');
+                container.innerHTML = '';
+                
+                if (Object.keys(funeralHomes).length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🏢</div>
+                            <h3>No funeral homes configured</h3>
+                            <p>Click "Add Funeral Home" to get started</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                Object.entries(funeralHomes).forEach(([id, home]) => {
+                    const card = document.createElement('div');
+                    card.className = `funeral-home-card ${home.active ? '' : 'inactive'}`;
+                    
+                    const lastScraped = home.last_scraped ? 
+                        new Date(home.last_scraped).toLocaleString() : 'Never';
+                    
+                    card.innerHTML = `
+                        <div class="funeral-home-header">
+                            <div class="funeral-home-name">${home.name}</div>
+                            <div class="funeral-home-status ${home.active ? 'status-active' : 'status-inactive'}">
+                                ${home.active ? 'Active' : 'Inactive'}
+                            </div>
+                        </div>
+                        <div class="funeral-home-details">
+                            <div><strong>URL:</strong> <a href="${home.url}" target="_blank">${home.url}</a></div>
+                            <div><strong>Address:</strong> ${home.address}</div>
+                            <div><strong>Last Scraped:</strong> ${lastScraped}</div>
+                        </div>
+                        <div class="funeral-home-actions">
+                            <button class="btn btn-sm btn-success" onclick="scrapeSingle('${id}')">Scrape Now</button>
+                            <button class="btn btn-sm" onclick="toggleFuneralHomeStatus('${id}', ${!home.active})">
+                                ${home.active ? 'Deactivate' : 'Activate'}
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteFuneralHome('${id}')">Delete</button>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+                
+            } catch (error) {
+                showStatus(`Error loading funeral homes: ${error.message}`, 'error');
+            }
+        }
+        
+        function showAddFuneralHomeModal() {
+            document.getElementById('add-funeral-home-modal').style.display = 'block';
+        }
+        
+        function closeAddFuneralHomeModal() {
+            document.getElementById('add-funeral-home-modal').style.display = 'none';
+            document.getElementById('add-funeral-home-form').reset();
+        }
+        
+        document.getElementById('add-funeral-home-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('funeral-home-name').value,
+                url: document.getElementById('funeral-home-url').value,
+                address: document.getElementById('funeral-home-address').value,
+                active: document.getElementById('funeral-home-active').checked
+            };
+            
+            try {
+                const response = await fetch('/api/funeral-homes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus(`Added ${formData.name} successfully`, 'success');
+                    closeAddFuneralHomeModal();
+                    refreshFuneralHomes();
+                } else {
+                    showStatus(`Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`Error adding funeral home: ${error.message}`, 'error');
+            }
+        });
+        
+        async function toggleFuneralHomeStatus(homeId, activate) {
+            try {
+                const response = await fetch(`/api/funeral-homes/${homeId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ active: activate })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus(`Funeral home ${activate ? 'activated' : 'deactivated'} successfully`, 'success');
+                    refreshFuneralHomes();
+                } else {
+                    showStatus(`Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`Error updating funeral home: ${error.message}`, 'error');
+            }
+        }
+        
+        async function deleteFuneralHome(homeId) {
+            if (!confirm('Are you sure you want to delete this funeral home? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/funeral-homes/${homeId}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus('Funeral home deleted successfully', 'success');
+                    refreshFuneralHomes();
+                } else {
+                    showStatus(`Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`Error deleting funeral home: ${error.message}`, 'error');
+            }
+        }
+        
+        // Archive functionality - FIXED
+        async function archiveObituary(obituaryId, funeralHomeId) {
+            if (!confirm('Are you sure you want to archive this obituary?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/archive/${funeralHomeId}/${obituaryId}`, {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus('Obituary archived successfully', 'success');
+                    refreshObituaries();
+                } else {
+                    showStatus(`Error archiving obituary: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`Error archiving obituary: ${error.message}`, 'error');
+            }
+        }
+        
+        // Flag management functions
+        let flagTypes = {};
+        
+        // Load flag types from API
+        async function loadFlagTypes() {
+            try {
+                console.log('Loading flag types...');
+                const response = await fetch('/api/flags/types');
+                console.log('Flag types response:', response.status);
+                flagTypes = await response.json();
+                console.log('Flag types loaded:', flagTypes);
+            } catch (error) {
+                console.error('Error loading flag types:', error);
+                // Fallback to hardcoded flag types if API fails
+                flagTypes = {
+                    'not_obituary': {
+                        'label': 'Not an Obituary',
+                        'description': 'This entry is not actually an obituary',
+                        'severity': 'high',
+                        'color': '#dc3545'
+                    },
+                    'no_date': {
+                        'label': 'No Date/Incorrect Date',
+                        'description': 'Missing birth/death dates or dates are incorrect',
+                        'severity': 'medium',
+                        'color': '#ffc107'
+                    },
+                    'incorrect_age': {
+                        'label': 'Incorrect Age',
+                        'description': 'Age information is missing or incorrect',
+                        'severity': 'low',
+                        'color': '#17a2b8'
+                    },
+                    'no_photo': {
+                        'label': 'No Photo Displayed',
+                        'description': 'Photo is missing or not loading properly',
+                        'severity': 'low',
+                        'color': '#6c757d'
+                    },
+                    'incomplete_content': {
+                        'label': 'Incomplete Content',
+                        'description': 'Obituary text is truncated or missing information',
+                        'severity': 'medium',
+                        'color': '#fd7e14'
+                    },
+                    'duplicate': {
+                        'label': 'Duplicate Entry',
+                        'description': 'This obituary appears to be a duplicate',
+                        'severity': 'medium',
+                        'color': '#e83e8c'
+                    }
+                };
+                console.log('Using fallback flag types');
+            }
+        }
+        
+        // Show flag selection dialog
+        function showFlagDialog(obituaryUrl, funeralHome) {
+            // Load flag types if not already loaded
+            if (Object.keys(flagTypes).length === 0) {
+                loadFlagTypes().then(() => showFlagDialog(obituaryUrl, funeralHome));
+                return;
+            }
+            
+            // Build options list for the prompt
+            let optionsText = "Select a flag type:\n\n";
+            let optionNumbers = {};
+            let counter = 1;
+            
+            for (const [flagType, config] of Object.entries(flagTypes)) {
+                optionsText += `${counter}. ${config.label}\n   ${config.description}\n\n`;
+                optionNumbers[counter] = flagType;
+                counter++;
+            }
+            
+            optionsText += "Enter the number of your choice (or press Cancel to exit):";
+            
+            const choice = prompt(optionsText);
+            
+            if (choice === null) return; // User cancelled
+            
+            const choiceNum = parseInt(choice);
+            if (choiceNum >= 1 && choiceNum < counter && optionNumbers[choiceNum]) {
+                const selectedFlagType = optionNumbers[choiceNum];
+                const notes = prompt(`Add a note for this ${flagTypes[selectedFlagType].label} flag (optional):`);
+                
+                if (notes !== null) { // User didn't cancel the notes prompt
+                    addFlag(obituaryUrl, selectedFlagType, funeralHome, notes || '');
+                }
+            } else {
+                alert('Invalid selection. Please try again.');
+            }
+        }
+        
+        // Add flag to obituary
+        async function addFlag(obituaryUrl, flagType, funeralHome, notes) {
+            try {
+                const response = await fetch('/api/flags', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        obituary_url: obituaryUrl,
+                        flag_type: flagType,
+                        funeral_home: funeralHome,
+                        notes: notes || ''
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus(result.message, 'success');
+                    refreshObituaries(); // Refresh to show flag indicator
+                } else {
+                    showStatus(`Error adding flag: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`Error adding flag: ${error.message}`, 'error');
+            }
+        }
+        
+        
+        // Close dropdowns when clicking outside - NO LONGER NEEDED
+        // document.addEventListener('click', function(event) {
+        //     if (!event.target.closest('.flag-dropdown')) {
+        //         document.querySelectorAll('.flag-dropdown-content').forEach(d => {
+        //             d.classList.remove('show');
+        //             d.style.display = 'none';
+        //         });
+        //     }
+        // });
+
+        // Prevent event bubbling when clicking inside dropdown content - NO LONGER NEEDED
+        // document.addEventListener('click', function(event) {
+        //     if (event.target.closest('.flag-dropdown-content')) {
+        //         event.stopPropagation();
+        //     }
+        // });
+        
+        
+        async function loadArchivedObituaries() {
+            try {
+                const response = await fetch('/api/obituaries?archived=true');
+                const data = await response.json();
+                
+                const container = document.getElementById('archived-obituaries');
+                container.innerHTML = '';
+                
+                if (data.obituaries.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📁</div>
+                            <h3>No archived obituaries</h3>
+                            <p>Archived obituaries will appear here</p>
+                        </div>
+                    `;
+                } else {
+                    // Use the same rendering logic as regular obituaries
+                    data.obituaries.forEach(obituary => {
+                        const card = document.createElement('div');
+                        card.className = 'obituary-card archived';
+                        
+                        // Build date display
+                        let dateDisplay = '';
+                        if (obituary.birth_date && obituary.death_date) {
+                            dateDisplay = `${obituary.birth_date} - ${obituary.death_date}`;
+                        } else if (obituary.death_date) {
+                            dateDisplay = obituary.death_date;
+                        } else if (obituary.birth_date) {
+                            dateDisplay = `Born ${obituary.birth_date}`;
+                        } else {
+                            dateDisplay = 'Dates unknown';
+                        }
+                        
+                        // Build age display
+                        let ageDisplay = '';
+                        if (obituary.age) {
+                            ageDisplay = `<div class="obituary-age">Age ${obituary.age}</div>`;
+                        }
+                        
+                        // Build photo section
+                        let photoHtml = '';
+                        if (obituary.photo_url) {
+                            photoHtml = `
+                                <div class="obituary-photo">
+                                    <img src="${obituary.photo_url}" alt="${obituary.name}" onerror="this.parentElement.classList.add('no-photo'); this.parentElement.innerHTML='<div>Photo not available</div>';">
+                                </div>
+                            `;
+                        } else {
+                            photoHtml = `
+                                <div class="obituary-photo no-photo">
+                                    <div>No photo available</div>
+                                </div>
+                            `;
+                        }
+                        
+                        // Build summary display
+                        let summaryHtml = '';
+                        if (obituary.summary) {
+                            summaryHtml = `<div class="obituary-summary">"${obituary.summary}"</div>`;
+                        }
+                        
+                        card.innerHTML = `
+                            ${photoHtml}
+                            <div class="obituary-content">
+                                <div class="obituary-header">
+                                    <div class="obituary-name">${obituary.name} (Archived)</div>
+                                    <div class="obituary-dates">${dateDisplay}</div>
+                                    ${ageDisplay}
+                                </div>
+                                <div class="obituary-funeral-home">${obituary.funeral_home}</div>
+                                ${summaryHtml}
+                                <div class="obituary-actions">
+                                    <a href="${obituary.url}" target="_blank" class="obituary-link">View Full Obituary</a>
+                                </div>
+                                <div class="obituary-meta">
+                                    <span>ID: ${obituary.id}</span>
+                                    <span>Archived: ${obituary.last_seen}</span>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                }
+            } catch (error) {
+                showStatus(`Error loading archived obituaries: ${error.message}`, 'error');
+            }
+        }
+        
+        async function loadStatistics() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+                
+                const container = document.getElementById('statistics-content');
+                container.innerHTML = `
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-number">${stats.total_funeral_homes}</div>
+                            <div>Total Funeral Homes</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">${stats.active_funeral_homes}</div>
+                            <div>Active Funeral Homes</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">${stats.total_obituaries}</div>
+                            <div>Current Obituaries</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">${stats.archived_obituaries}</div>
+                            <div>Archived Obituaries</div>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                showStatus(`Error loading statistics: ${error.message}`, 'error');
+            }
+        }
+        
+        async function scrapeSingle(homeId) {
+            showStatus(`Scraping ${homeId}...`, 'info');
+            
+            try {
+                const response = await fetch(`/api/scrape/${homeId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showStatus(`Successfully scraped ${data.funeral_home}`, 'success');
+                } else {
+                    showStatus(`Error scraping ${data.funeral_home}: ${data.error}`, 'error');
+                }
+                
+                showLogs(`${data.funeral_home} Output:\n${data.output}\n\nErrors:\n${data.error}`);
+                
+                // Refresh the current view
+                if (document.querySelector('.tab.active').textContent === 'Obituaries') {
+                    await refreshObituaries();
+                } else if (document.querySelector('.tab.active').textContent === 'Funeral Homes') {
+                    await refreshFuneralHomes();
+                }
+            } catch (error) {
+                showStatus(`Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function scrapeAll() {
+            showStatus('Scraping all active funeral homes...', 'info');
+            
+            try {
+                const response = await fetch('/api/scrape/all');
+                const data = await response.json();
+                
+                let successCount = 0;
+                let totalCount = Object.keys(data.results).length;
+                let logContent = '';
+                
+                for (const [homeId, result] of Object.entries(data.results)) {
+                    if (result.success) {
+                        successCount++;
+                    }
+                    logContent += `${result.name}:\n${result.output}\nErrors: ${result.error}\n\n`;
+                }
+                
+                showStatus(`Scraped ${successCount}/${totalCount} funeral homes successfully`, 
+                          successCount === totalCount ? 'success' : 'warning');
+                showLogs(logContent);
+                
+                // Refresh the current view
+                if (document.querySelector('.tab.active').textContent === 'Obituaries') {
+                    await refreshObituaries();
+                } else if (document.querySelector('.tab.active').textContent === 'Funeral Homes') {
+                    await refreshFuneralHomes();
+                }
+            } catch (error) {
+                showStatus(`Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Search functionality for archived obituaries
+        function searchArchivedObituaries() {
+            const searchTerm = document.getElementById('archive-search-input').value;
+            // Implement archive search logic here
+        }
+        
+        function clearArchiveSearch() {
+            document.getElementById('archive-search-input').value = '';
+            loadArchivedObituaries();
+        }
+        
+        // Event listeners
+        document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchObituaries();
+            }
+        });
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('add-funeral-home-modal');
+            if (event.target == modal) {
+                closeAddFuneralHomeModal();
+            }
+        };
+        
+        // Load initial data
+        refreshObituaries();
+        loadFlagTypes();
+    </script>
+</body>
+</html>

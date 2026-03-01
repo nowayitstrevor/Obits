@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Obituaries - Website Preview</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            margin: 10px;
+            min-width: 150px;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .obituary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .obituary-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .obituary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            float: left;
+            margin-right: 15px;
+            margin-bottom: 10px;
+        }
+        .name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .funeral-home {
+            color: #667eea;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        .date-age {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        .summary {
+            color: #555;
+            line-height: 1.4;
+            font-size: 0.9em;
+            max-height: 100px;
+            overflow: hidden;
+            position: relative;
+        }
+        .summary::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 20px;
+            width: 100%;
+            background: linear-gradient(transparent, white);
+        }
+        .view-more {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9em;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .view-more:hover {
+            text-decoration: underline;
+        }
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .filter-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .funeral-home-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🕊️ Local Obituaries</h1>
+        <p>Honoring the memories of our community members</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-number" id="total-obituaries">0</div>
+            <div>Total Obituaries</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="funeral-homes">0</div>
+            <div>Funeral Homes</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="last-updated">--</div>
+            <div>Last Updated</div>
+        </div>
+    </div>
+
+    <div class="filter-section">
+        <h3>Filter by Funeral Home</h3>
+        <div class="funeral-home-filter" id="funeral-home-filter">
+            <button class="filter-btn active" data-home="all">All (0)</button>
+        </div>
+    </div>
+
+    <div class="obituary-grid" id="obituary-grid">
+        <div style="background:white;border-radius:10px;padding:16px;">Loading obituaries...</div>
+    </div>
+
+    <script>
+        let allObituaries = [];
+        let selectedHome = 'all';
+
+        function formatLastUpdated(value) {
+            if (!value) return '--';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return '--';
+            return date.toLocaleDateString();
+        }
+
+        function escapeHtml(value) {
+            if (!value) return '';
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function renderCards() {
+            const grid = document.getElementById('obituary-grid');
+            const visible = selectedHome === 'all'
+                ? allObituaries
+                : allObituaries.filter(item => (item.funeral_home || 'Unknown') === selectedHome);
+
+            if (!visible.length) {
+                grid.innerHTML = '<div style="background:white;border-radius:10px;padding:16px;">No obituaries found for this filter.</div>';
+                return;
+            }
+
+            grid.innerHTML = visible.map(item => {
+                const home = item.funeral_home || 'Unknown';
+                const name = item.name || 'Unknown';
+                const deathDate = item.date_of_death || 'Unknown';
+                const birthDate = item.birth_date || 'Unknown';
+                const age = item.age && item.age !== 'Unknown' ? ` • Age ${item.age}` : '';
+                const summary = item.summary || 'No summary available.';
+                const photo = item.photo_url || '';
+                const url = item.url || '#';
+
+                const imgHtml = photo
+                    ? `<img src="${escapeHtml(photo)}" alt="${escapeHtml(name)}" class="photo" onerror="this.style.display='none'">`
+                    : '';
+
+                return `
+                    <div class="obituary-card" data-home="${escapeHtml(home)}">
+                        ${imgHtml}
+                        <div class="name">${escapeHtml(name)}</div>
+                        <div class="funeral-home">${escapeHtml(home)}</div>
+                        <div class="date-age">Born: ${escapeHtml(birthDate)} • Died: ${escapeHtml(deathDate)}${escapeHtml(age)}</div>
+                        <div class="summary">${escapeHtml(summary)}</div>
+                        <a href="${escapeHtml(url)}" class="view-more" target="_blank" rel="noopener noreferrer">View Full Obituary →</a>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function buildFilters() {
+            const filterContainer = document.getElementById('funeral-home-filter');
+            const counts = {};
+            for (const item of allObituaries) {
+                const home = item.funeral_home || 'Unknown';
+                counts[home] = (counts[home] || 0) + 1;
+            }
+
+            const homes = Object.keys(counts).sort((a, b) => a.localeCompare(b));
+            const buttons = [`<button class="filter-btn ${selectedHome === 'all' ? 'active' : ''}" data-home="all">All (${allObituaries.length})</button>`];
+
+            for (const home of homes) {
+                buttons.push(`<button class="filter-btn ${selectedHome === home ? 'active' : ''}" data-home="${escapeHtml(home)}">${escapeHtml(home)} (${counts[home]})</button>`);
+            }
+
+            filterContainer.innerHTML = buttons.join('');
+            filterContainer.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    selectedHome = btn.dataset.home;
+                    buildFilters();
+                    renderCards();
+                });
+            });
+        }
+
+        async function loadData() {
+            try {
+                const response = await fetch('/api/obituaries');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const payload = await response.json();
+                allObituaries = Array.isArray(payload.obituaries) ? payload.obituaries : [];
+
+                document.getElementById('total-obituaries').textContent = payload.summary?.total_obituaries ?? allObituaries.length;
+                document.getElementById('funeral-homes').textContent = payload.summary?.working_funeral_homes ?? 0;
+                document.getElementById('last-updated').textContent = formatLastUpdated(payload.summary?.generated_at);
+
+                buildFilters();
+                renderCards();
+            } catch (error) {
+                console.error('Failed to load obituaries:', error);
+                document.getElementById('obituary-grid').innerHTML = '<div style="background:white;border-radius:10px;padding:16px;">Unable to load obituary data. Please refresh.</div>';
+            }
+        }
+
+        loadData();
+    </script>
+</body>
+</html>

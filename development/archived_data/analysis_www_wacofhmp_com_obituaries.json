@@ -1,0 +1,292 @@
+{
+  "url": "https://www.wacofhmp.com/obituaries",
+  "status": "success",
+  "requires_javascript": true,
+  "platform_type": "custom",
+  "obituary_section": {
+    "found": true,
+    "url_patterns": [
+      "/obituaries/"
+    ],
+    "section_selectors": [],
+    "link_count": 35,
+    "sample_links": [
+      {
+        "url": "https://www.wacofhmp.com/obituaries",
+        "text": "Obituaries Listing",
+        "href": "/obituaries"
+      },
+      {
+        "url": "https://www.wacofhmp.com/plan-ahead/plan-ahead",
+        "text": "Planning Ahead",
+        "href": "/plan-ahead/plan-ahead"
+      },
+      {
+        "url": "https://www.wacofhmp.com/plan-ahead/online-preplanning-form",
+        "text": "Online Pre-Planning Form",
+        "href": "/plan-ahead/online-preplanning-form"
+      },
+      {
+        "url": "https://www.wacofhmp.com/plan-ahead/preplanning-checklist",
+        "text": "Pre-Planning Checklist",
+        "href": "/plan-ahead/preplanning-checklist"
+      },
+      {
+        "url": "https://www.wacofhmp.com/plan-ahead/talk-of-a-lifetime",
+        "text": "Talk Of A Lifetime",
+        "href": "/plan-ahead/talk-of-a-lifetime"
+      }
+    ],
+    "navigation_links": [
+      {
+        "url": "https://www.wacofhmp.com/obituaries",
+        "text": "Obituaries",
+        "href": "#"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries",
+        "text": "Obituaries Listing",
+        "href": "/obituaries"
+      },
+      {
+        "url": "https://www.wacofhmp.com/email-subscribe",
+        "text": "Obituary Notifications",
+        "href": "/email-subscribe"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries",
+        "text": "Obituaries",
+        "href": "#"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries",
+        "text": "Obituaries Listing",
+        "href": "/obituaries"
+      },
+      {
+        "url": "https://www.wacofhmp.com/email-subscribe",
+        "text": "Obituary Notifications",
+        "href": "/email-subscribe"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/gloria-barr",
+        "text": "",
+        "href": "https://www.wacofhmp.com/obituaries/gloria-barr"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/gloria-barr",
+        "text": "Gloria Fay Miller-Barr",
+        "href": "https://www.wacofhmp.com/obituaries/gloria-barr"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/gloria-barr",
+        "text": "Visit Obituary",
+        "href": "https://www.wacofhmp.com/obituaries/gloria-barr"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/rhonda-hilliard",
+        "text": "",
+        "href": "https://www.wacofhmp.com/obituaries/rhonda-hilliard"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/rhonda-hilliard",
+        "text": "Dr. Von Hilliard",
+        "href": "https://www.wacofhmp.com/obituaries/rhonda-hilliard"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/rhonda-hilliard",
+        "text": "Visit Obituary",
+        "href": "https://www.wacofhmp.com/obituaries/rhonda-hilliard"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/jacquelyn-johnson",
+        "text": "",
+        "href": "https://www.wacofhmp.com/obituaries/jacquelyn-johnson"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/jacquelyn-johnson",
+        "text": "Jacquelyn Johnson",
+        "href": "https://www.wacofhmp.com/obituaries/jacquelyn-johnson"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/jacquelyn-johnson",
+        "text": "Visit Obituary",
+        "href": "https://www.wacofhmp.com/obituaries/jacquelyn-johnson"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/belinda-dickey",
+        "text": "",
+        "href": "https://www.wacofhmp.com/obituaries/belinda-dickey"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/belinda-dickey",
+        "text": "Belinda Gayle Dickey",
+        "href": "https://www.wacofhmp.com/obituaries/belinda-dickey"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/belinda-dickey",
+        "text": "Visit Obituary",
+        "href": "https://www.wacofhmp.com/obituaries/belinda-dickey"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/alvin-stevens",
+        "text": "",
+        "href": "https://www.wacofhmp.com/obituaries/alvin-stevens"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/alvin-stevens",
+        "text": "Alvin Carl Stevens",
+        "href": "https://www.wacofhmp.com/obituaries/alvin-stevens"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/alvin-stevens",
+        "text": "Visit Obituary",
+        "href": "https://www.wacofhmp.com/obituaries/alvin-stevens"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/gladys-lamon",
+        "text": "",
+        "href": "https://www.wacofhmp.com/obituaries/gladys-lamon"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/gladys-lamon",
+        "text": "Gladys Greta (Rita) Lamon",
+        "href": "https://www.wacofhmp.com/obituaries/gladys-lamon"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/gladys-lamon",
+        "text": "Visit Obituary",
+        "href": "https://www.wacofhmp.com/obituaries/gladys-lamon"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/dorothy-benson",
+        "text": "",
+        "href": "https://www.wacofhmp.com/obituaries/dorothy-benson"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/dorothy-benson",
+        "text": "Dorothy Louise Benson",
+        "href": "https://www.wacofhmp.com/obituaries/dorothy-benson"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/dorothy-benson",
+        "text": "Visit Obituary",
+        "href": "https://www.wacofhmp.com/obituaries/dorothy-benson"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/elizabeth-bray",
+        "text": "",
+        "href": "https://www.wacofhmp.com/obituaries/elizabeth-bray"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/elizabeth-bray",
+        "text": "Elizabeth Madge Bray",
+        "href": "https://www.wacofhmp.com/obituaries/elizabeth-bray"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/elizabeth-bray",
+        "text": "Visit Obituary",
+        "href": "https://www.wacofhmp.com/obituaries/elizabeth-bray"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/robert-black",
+        "text": "",
+        "href": "https://www.wacofhmp.com/obituaries/robert-black"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/robert-black",
+        "text": "Robert A. Black",
+        "href": "https://www.wacofhmp.com/obituaries/robert-black"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/robert-black",
+        "text": "Visit Obituary",
+        "href": "https://www.wacofhmp.com/obituaries/robert-black"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/cynthia-anderson",
+        "text": "",
+        "href": "https://www.wacofhmp.com/obituaries/cynthia-anderson"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/cynthia-anderson",
+        "text": "Cynthia Elaine Anderson",
+        "href": "https://www.wacofhmp.com/obituaries/cynthia-anderson"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries/cynthia-anderson",
+        "text": "Visit Obituary",
+        "href": "https://www.wacofhmp.com/obituaries/cynthia-anderson"
+      },
+      {
+        "url": "https://www.wacofhmp.com/",
+        "text": "Waco Memorial Funeral Home,",
+        "href": "/"
+      },
+      {
+        "url": "https://www.google.com/search?q=waco-memorial-park",
+        "text": "",
+        "href": "https://www.google.com/search?q=waco-memorial-park"
+      },
+      {
+        "url": "https://www.wacofhmp.com/obituaries",
+        "text": "Obituaries Listing",
+        "href": "/obituaries"
+      },
+      {
+        "url": "https://www.wacofhmp.com/email-subscribe",
+        "text": "Obituary Notifications",
+        "href": "/email-subscribe"
+      }
+    ],
+    "container_selectors": [
+      ".dmNavItemSelected",
+      ".dmUDNavigationItem_010101604192",
+      ".dmUDNavigationItem_010101140776",
+      ".dmUDNavigationItem_010101521951",
+      ".unifiednav__item-wrap"
+    ]
+  },
+  "page_structure": {
+    "has_header": false,
+    "has_navigation": true,
+    "has_sidebar": false,
+    "has_footer": false,
+    "main_content_selectors": [],
+    "total_links": 192,
+    "total_images": 20,
+    "has_pagination": true
+  },
+  "suggested_config": {
+    "scraper_type": "enhanced_generic",
+    "requires_javascript": true,
+    "custom_selectors": {
+      "obituary_list": ".dmNavItemSelected, .dmUDNavigationItem_010101604192, .dmUDNavigationItem_010101140776, .dmUDNavigationItem_010101521951, .unifiednav__item-wrap"
+    },
+    "url_patterns": {
+      "obituary_indicators": [
+        "/obituaries/"
+      ]
+    },
+    "skip_patterns": [
+      "/send-flowers",
+      "/flowers",
+      "/sympathy",
+      "/plant-tree",
+      "/share",
+      "/guestbook",
+      "/guest-book",
+      "/print"
+    ],
+    "validation_rules": {
+      "min_content_length": 100,
+      "required_elements": [
+        "name"
+      ]
+    }
+  },
+  "issues_found": [],
+  "recommendations": [
+    "❌ Website analysis failed. Manual investigation required."
+  ]
+}

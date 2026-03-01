@@ -1,0 +1,82 @@
+{
+  "slctx_enhanced": {
+    "name": "SLC Texas Funeral Services",
+    "url": "https://www.slctx.com/listings",
+    "address": "Unknown",
+    "scraper_type": "enhanced_generic",
+    "script": "enhanced_generic_scraper.py",
+    "storage_file": "obituaries_slctx_enhanced.json",
+    "active": true,
+    "priority": 7,
+    "requires_javascript": false,
+    "custom_selectors": {
+      "obituary_list": ".listing-item, .obituary-card, .tribute-item",
+      "obituary_link": "a[href*='/obituary/']",
+      "name_selector": "h1, .deceased-name, .tribute-name",
+      "date_container": ".dates, .life-span, .tribute-dates",
+      "photo_selector": ".photo img, .tribute-photo img"
+    },
+    "url_patterns": {
+      "obituary_indicators": ["/obituary/"],
+      "obituary_page": "/obituary/"
+    },
+    "skip_patterns": [
+      "/send-flowers", "/plant-tree", "/sympathy", "/share", 
+      "/guestbook", "/guest-book", "/print", "/directions",
+      "/flowers", "/gifts", "/memory"
+    ],
+    "validation_rules": {
+      "min_content_length": 200,
+      "required_elements": ["name"],
+      "forbidden_content": [
+        "contact us", "about us", "our staff", "staff directory",
+        "our services", "services overview", "directions to"
+      ]
+    }
+  },
+  "wacofhmp_enhanced": {
+    "name": "Waco Funeral Home Memorial Park",
+    "url": "https://www.wacofhmp.com/obituaries",
+    "address": "Unknown, Waco, TX",
+    "scraper_type": "enhanced_generic",
+    "script": "enhanced_generic_scraper.py", 
+    "storage_file": "obituaries_wacofhmp_enhanced.json",
+    "active": true,
+    "priority": 11,
+    "requires_javascript": false,
+    "custom_headers": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.5",
+      "Accept-Encoding": "gzip, deflate, br",
+      "DNT": "1",
+      "Connection": "keep-alive",
+      "Upgrade-Insecure-Requests": "1"
+    },
+    "custom_selectors": {
+      "obituary_list": ".obituary-listing, .obit-card, .memorial-listing, .card, .listing-item",
+      "obituary_link": "a[href*='/obituary'], a[href*='/memorial'], a[href*='/tribute']",
+      "name_selector": "h1, h2, .deceased-name, .obituary-title, .memorial-title",
+      "date_container": ".dates, .obit-dates, .life-dates, .memorial-dates",
+      "photo_selector": ".obituary-photo img, .memorial-photo img, .deceased-photo img"
+    },
+    "url_patterns": {
+      "obituary_indicators": ["/obituary", "/memorial", "/tribute", "/deceased"],
+      "obituary_page": "/obituary"
+    },
+    "skip_patterns": [
+      "/contact", "/about", "/services", "/staff", "/location",
+      "/directions", "/send-flowers", "/flowers", "/cemetery",
+      "/pre-planning", "/resources", "/grief-support"
+    ],
+    "validation_rules": {
+      "min_content_length": 150,
+      "required_elements": ["name"],
+      "forbidden_content": [
+        "contact us", "about us", "our staff", "our services",
+        "cemetery information", "directions", "staff directory",
+        "pre-planning", "grief support"
+      ]
+    }
+  }
+}

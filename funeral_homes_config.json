@@ -1,0 +1,464 @@
+{
+  "funeral_homes": {
+    "lakeshore": {
+      "name": "Lake Shore Funeral Home",
+      "url": "https://www.lakeshorefuneralhome.com/obituaries/obituary-listings",
+      "address": "5201 Steinbeck Bend, Waco, TX",
+      "scraper_type": "selenium",
+      "script": "scrape_real_obituaries.py",
+      "storage_file": "obituaries_detailed.json",
+      "active": true,
+      "last_scraped": "2025-07-25T23:46:00.835738",
+      "priority": 1,
+      "requires_javascript": true,
+      "notes": "Uses Tribute Technology API - fixed with Selenium for JavaScript content loading"
+    },
+    "aderhold": {
+      "name": "Aderhold Funeral Home",
+      "url": "https://www.aderholdfuneralhome.com/obituaries",
+      "address": "808 Reagan Street, West, TX",
+      "scraper_type": "generic",
+      "script": "scrape_generic_obituaries.py",
+      "storage_file": "obituaries_aderhold.json",
+      "active": true,
+      "last_scraped": "2025-07-25T23:46:01.863113",
+      "priority": 2,
+      "custom_headers": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+      },
+      "requires_javascript": true,
+      "custom_selectors": {
+        "obituary_list": ".obit-listing, .obituary-item, .memorial-listing",
+        "obituary_link": "a[href*='/obituary/'], a[href*='/obituaries/'], a[href*='/memorial/']",
+        "name_selector": "h1, .deceased-name, .obit-name, .memorial-name",
+        "date_container": ".dates, .life-dates, .obit-dates",
+        "birth_date": ".birth-date, .born, .date-birth",
+        "death_date": ".death-date, .died, .date-death, .passed",
+        "age_selector": ".age, .obit-age",
+        "content_selector": ".obit-content, .obituary-text, .memorial-content",
+        "photo_selector": ".obit-photo img, .memorial-photo img"
+      },
+      "url_patterns": {
+        "obituary_indicators": [
+          "/obituary/",
+          "/obituaries/",
+          "/memorial/",
+          "/tribute/"
+        ]
+      },
+      "skip_patterns": [
+        "/send-flowers",
+        "/plant-tree",
+        "/guestbook",
+        "/directions",
+        "mailto:",
+        "#",
+        "javascript:"
+      ]
+    },
+    "whbfamily": {
+      "name": "WHB Family Funeral Home",
+      "url": "https://www.whbfamily.com/obituaries",
+      "address": "Unknown",
+      "scraper_type": "external_redirect",
+      "script": "generic_selenium_scraper.py",
+      "storage_file": "obituaries_whbfamily.json",
+      "active": true,
+      "last_scraped": "2025-07-25T23:46:02.638154",
+      "priority": 3,
+      "requires_javascript": true,
+      "custom_headers": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+      },
+      "custom_selectors": {
+        "obituary_list": ".obit-listing, .obituary-item, .memorial-listing",
+        "obituary_link": "a[href*='/obituary/'], a[href*='/obituaries/']",
+        "name_selector": "h1, .deceased-name, .obit-name, .memorial-name",
+        "date_container": ".dates, .life-dates, .obit-dates",
+        "birth_date": ".birth-date, .born, .date-birth",
+        "death_date": ".death-date, .died, .date-death, .passed",
+        "age_selector": ".age, .obit-age",
+        "content_selector": ".obit-content, .obituary-text, .memorial-content",
+        "photo_selector": ".obit-photo img, .memorial-photo img"
+      },
+      "url_patterns": {
+        "obituary_indicators": [
+          "/obituary/",
+          "/obituaries/",
+          "/memorial/",
+          "/tribute/"
+        ]
+      },
+      "skip_patterns": [
+        "/obituaries",
+        "/obituary-search",
+        "/search",
+        "/listings",
+        "/send-flowers",
+        "/plant-tree",
+        "/guestbook",
+        "/directions",
+        "tributearchive.com",
+        "google.com",
+        "wichmannfuneralhomes.com",
+        "mailto:",
+        "#",
+        "javascript:"
+      ],
+      "notes": "Hosts obituary pages at /obituaries and provides obituary-sitemap.xml"
+    },
+    "gracegardens": {
+      "name": "Grace Gardens Funeral Home",
+      "url": "https://www.gracegardensfh.com/obituaries",
+      "address": "8220 Woodway Drive, Waco, TX",
+      "scraper_type": "selenium",
+      "script": "generic_selenium_scraper.py",
+      "storage_file": "obituaries_gracegardens.json",
+      "active": true,
+      "last_scraped": "2025-07-25T23:46:03.591180",
+      "priority": 4,
+      "requires_javascript": true,
+      "custom_selectors": {
+        "obituary_list": ".obit-listing, .obituary-item, .memorial-listing",
+        "obituary_link": "a[href*='/obituary/'], a[href*='/memorial/']",
+        "name_selector": "h1, .deceased-name, .obit-name, .memorial-name",
+        "date_container": ".dates, .life-dates, .obit-dates",
+        "birth_date": ".birth-date, .born, .date-birth",
+        "death_date": ".death-date, .died, .date-death, .passed",
+        "age_selector": ".age, .obit-age",
+        "content_selector": ".obit-content, .obituary-text, .memorial-content",
+        "photo_selector": ".obit-photo img, .memorial-photo img"
+      },
+      "skip_patterns": [
+        "/obituaries",
+        "/obituary-search",
+        "/search",
+        "/listings",
+        "/send-flowers",
+        "/plant-tree",
+        "/guestbook",
+        "/directions",
+        "tributearchive.com",
+        "google.com",
+        "mailto:",
+        "#",
+        "javascript:"
+      ],
+      "notes": "Uses Tukios/dmAPI platform - fixed with Selenium for JavaScript content loading"
+    },
+    "mcdowell": {
+      "name": "McDowell Funeral Home",
+      "url": "https://www.mcdowellfuneralhome.com",
+      "address": "1104 Chestnut Street, Waco, TX",
+      "scraper_type": "generic",
+      "script": "scrape_generic_obituaries.py",
+      "storage_file": "obituaries_mcdowell.json",
+      "active": true,
+      "last_scraped": "2025-07-25T23:46:04.359879",
+      "priority": 5,
+      "custom_selectors": {
+        "obituary_list": ".obit-listing, .obituary-item, .memorial-listing",
+        "obituary_link": "a[href*='/obituary/']",
+        "name_selector": "h1, .deceased-name, .obit-name, .memorial-name, .tribute-name",
+        "date_container": ".dates, .life-dates, .obit-dates, .memorial-dates, .lifespan",
+        "birth_date": ".birth-date, .born-date, .date-birth, span.dob",
+        "death_date": ".death-date, .died-date, .date-death, .passed-date, span.dod",
+        "age_selector": ".age, .obit-age, .memorial-age",
+        "content_selector": ".obit-content, .obituary-text, .memorial-content",
+        "photo_selector": ".obit-photo img, .memorial-photo img, .tribute-photo img"
+      },
+      "date_patterns": [
+        "\\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\\s+\\d{1,2},?\\s+\\d{4}\\b",
+        "\\b\\d{1,2}/\\d{1,2}/\\d{4}\\b",
+        "\\b\\d{1,2}-\\d{1,2}-\\d{4}\\b",
+        "\\b\\d{4}-\\d{1,2}-\\d{1,2}\\b"
+      ],
+      "skip_patterns": [
+        "/send-flowers",
+        "/plant-tree",
+        "/memorial-gifts",
+        "/directions",
+        "/guestbook",
+        "/listings",
+        "/obituaries",
+        "/search",
+        "tributearchive.com",
+        "google.com",
+        "mailto:",
+        "#",
+        "javascript:"
+      ]
+    },
+    "pecangrove": {
+      "name": "Pecan Grove Funeral Home",
+      "url": "https://www.pecangrovefuneral.com/obituaries",
+      "address": "3124 Robinson Drive, Waco, TX",
+      "scraper_type": "selenium",
+      "script": "generic_selenium_scraper.py",
+      "storage_file": "obituaries_pecangrove.json",
+      "active": true,
+      "last_scraped": "2025-07-25T23:46:20.649218",
+      "priority": 6,
+      "requires_javascript": true,
+      "custom_selectors": {
+        "obituary_list": ".obit-listing, .obituary-item, .memorial-listing",
+        "obituary_link": "a[href*='/obituary/'], a[href*='/memorial/']",
+        "name_selector": "h1, .deceased-name, .obit-name, .memorial-name",
+        "date_container": ".dates, .life-dates, .obit-dates",
+        "birth_date": ".birth-date, .born, .date-birth",
+        "death_date": ".death-date, .died, .date-death, .passed",
+        "age_selector": ".age, .obit-age",
+        "content_selector": ".obit-content, .obituary-text, .memorial-content",
+        "photo_selector": ".obit-photo img, .memorial-photo img"
+      },
+      "skip_patterns": [
+        "/obituaries",
+        "/obituary-search",
+        "/search",
+        "/listings",
+        "/send-flowers",
+        "/plant-tree",
+        "/guestbook",
+        "/directions",
+        "tributearchive.com",
+        "google.com",
+        "mailto:",
+        "#",
+        "javascript:"
+      ],
+      "notes": "Uses Tukios/dmAPI platform - fixed with Selenium for JavaScript content loading"
+    },
+    "slctx": {
+      "name": "SLC Texas Funeral Services",
+      "url": "https://www.slctx.com/listings",
+      "address": "Unknown",
+      "scraper_type": "enhanced_generic",
+      "script": "enhanced_generic_scraper.py",
+      "storage_file": "obituaries_slctx.json",
+      "active": true,
+      "priority": 7,
+      "requires_javascript": false,
+      "custom_selectors": {
+        "obituary_list": ".sitemapsubitem, .sitemapitem",
+        "obituary_link": "a[href*='/obituary/']",
+        "name_selector": "h1, .deceased-name, .tribute-name",
+        "date_container": ".dates, .life-span, .tribute-dates",
+        "birth_date": ".obitdates .dob, .dob",
+        "death_date": ".obitdates .dod, .dod",
+        "age_selector": ".obitdates .ob-age, .ob-age",
+        "photo_selector": ".photo img, .tribute-photo img"
+      },
+      "url_patterns": {
+        "obituary_indicators": [
+          "/obituary/"
+        ],
+        "obituary_page": "/obituary/"
+      },
+      "skip_patterns": [
+        "/send-flowers",
+        "/plant-tree",
+        "/sympathy",
+        "/share",
+        "/guestbook",
+        "/guest-book",
+        "/print",
+        "/directions",
+        "/flowers",
+        "/gifts",
+        "/memory",
+        "/tribute-store",
+        "/candles",
+        "/listings",
+        "/obituaries",
+        "/search",
+        "tributearchive.com",
+        "google.com",
+        "mailto:",
+        "#",
+        "javascript:"
+      ],
+      "validation_rules": {
+        "min_content_length": 200,
+        "required_elements": [
+          "name"
+        ],
+        "forbidden_content": [
+          "contact us",
+          "about us",
+          "our staff",
+          "staff directory",
+          "our services",
+          "services overview",
+          "directions to"
+        ]
+      },
+      "last_scraped": "2025-07-26T15:47:37.429724"
+    },
+    "oakcrest": {
+      "name": "Oak Crest Funeral Home",
+      "url": "https://www.oakcrestwaco.com/obituaries",
+      "address": "Unknown, Waco, TX",
+      "scraper_type": "selenium",
+      "script": "generic_selenium_scraper.py",
+      "storage_file": "obituaries_oakcrest.json",
+      "active": true,
+      "last_scraped": "2025-07-25T23:46:06.725957",
+      "priority": 8,
+      "requires_javascript": true,
+      "custom_selectors": {
+        "obituary_list": ".obit-listing, .obituary-item, .memorial-listing",
+        "obituary_link": "a[href*='/obituary/'], a[href*='/memorial/']",
+        "name_selector": "h1, .deceased-name, .obit-name, .memorial-name",
+        "date_container": ".dates, .life-dates, .obit-dates",
+        "birth_date": ".birth-date, .born, .date-birth",
+        "death_date": ".death-date, .died, .date-death, .passed",
+        "age_selector": ".age, .obit-age",
+        "content_selector": ".obit-content, .obituary-text, .memorial-content",
+        "photo_selector": ".obit-photo img, .memorial-photo img"
+      },
+      "skip_patterns": [
+        "/obituaries",
+        "/obituary-search",
+        "/search",
+        "/listings",
+        "/send-flowers",
+        "/plant-tree",
+        "/guestbook",
+        "/directions",
+        "tributearchive.com",
+        "google.com",
+        "mailto:",
+        "#",
+        "javascript:"
+      ],
+      "notes": "Uses Tukios/dmAPI platform - fixed with Selenium for JavaScript content loading"
+    },
+    "foss": {
+      "name": "Foss Funeral Home",
+      "url": "https://www.fossfuneralhome.com",
+      "address": "Unknown",
+      "scraper_type": "generic",
+      "script": "scrape_generic_obituaries.py",
+      "storage_file": "obituaries_foss.json",
+      "active": true,
+      "last_scraped": "2025-07-25T23:46:07.411093",
+      "priority": 9,
+      "custom_selectors": {
+        "obituary_list": ".obit-listing, .obituary-item, .memorial-item",
+        "obituary_link": "a[href*='/obituary/']",
+        "name_selector": "h1, .deceased-name, .obit-name, .memorial-name",
+        "date_container": ".dates, .life-dates, .obit-dates, .birth-death-dates, p.lifespan",
+        "birth_date": ".birth-date, .born, .date-birth",
+        "death_date": ".death-date, .died, .date-death, .passed-away",
+        "age_selector": ".age, .obit-age, .years",
+        "content_selector": ".obit-content, .obituary-text, .memorial-text, .tribute-text",
+        "photo_selector": ".obit-photo img, .memorial-photo img, .deceased-photo img"
+      },
+      "date_patterns": [
+        "\\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\\s+\\d{1,2},?\\s+\\d{4}\\b",
+        "\\b\\d{1,2}/\\d{1,2}/\\d{4}\\b",
+        "\\b\\d{1,2}-\\d{1,2}-\\d{4}\\b",
+        "\\b\\d{4}-\\d{1,2}-\\d{1,2}\\b"
+      ],
+      "skip_patterns": [
+        "/send-flowers",
+        "/plant-memorial",
+        "/guestbook",
+        "/directions",
+        "mailto:",
+        "#",
+        "javascript:"
+      ]
+    },
+    "robertson": {
+      "name": "Robertson Funeral Home",
+      "url": "https://www.robertsonfh.com/listings",
+      "address": "Unknown",
+      "scraper_type": "listings",
+      "script": "scrape_generic_obituaries.py",
+      "storage_file": "obituaries_robertson.json",
+      "active": true,
+      "last_scraped": "2025-07-25T23:46:08.177271",
+      "priority": 10,
+      "custom_selectors": {
+        "obituary_list": ".obit-listing, .obituary-item, .listing-item",
+        "obituary_link": "a[href*='/obituary/']",
+        "name_selector": "h1, .deceased-name, .obit-name, .tribute-name, .name",
+        "date_container": ".dates, .life-dates, .obit-dates, .birth-death, .lifespan",
+        "birth_date": ".birth-date, .born, .date-birth, span.dob",
+        "death_date": ".death-date, .died, .date-death, .passed, span.dod",
+        "age_selector": ".age, .obit-age, .years-old",
+        "content_selector": ".obit-content, .obituary-text, .tribute-content, .memorial-text",
+        "photo_selector": ".obit-photo img, .deceased-photo img, .tribute-photo img, .memorial-photo img"
+      },
+      "date_patterns": [
+        "\\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\\s+\\d{1,2},?\\s+\\d{4}\\b",
+        "\\b\\d{1,2}/\\d{1,2}/\\d{4}\\b",
+        "\\b\\d{1,2}-\\d{1,2}-\\d{4}\\b",
+        "\\b\\d{4}-\\d{1,2}-\\d{1,2}\\b",
+        "\\b(?:born|birth|b\\.)\\s*:?\\s*([^-]+?)\\s*(?:-|–|—|to)\\s*(?:died|death|d\\.|passed)",
+        "\\b(?:died|death|d\\.|passed)\\s*:?\\s*([^,\\n]+)"
+      ],
+      "skip_patterns": [
+        "/send-flowers",
+        "send-flowers",
+        "tributearchive.com",
+        "/listings",
+        "?action=",
+        "mailto:",
+        "#",
+        "javascript:",
+        ".pdf",
+        ".jpg",
+        ".png",
+        ".gif"
+      ]
+    },
+    "wacofhmp": {
+      "name": "Waco Funeral Home Memorial Park",
+      "url": "https://www.wacofhmp.com/obituaries",
+      "address": "Unknown, Waco, TX",
+      "scraper_type": "selenium",
+      "script": "generic_selenium_scraper.py",
+      "storage_file": "obituaries_wacofhmp.json",
+      "active": true,
+      "last_scraped": "2025-07-25T23:46:08.937507",
+      "priority": 11,
+      "requires_javascript": true,
+      "custom_selectors": {
+        "obituary_list": ".obit-listing, .obituary-item, .memorial-listing",
+        "obituary_link": "a[href*='/obituary/'], a[href*='/memorial/']",
+        "name_selector": "h1, .deceased-name, .obit-name, .memorial-name",
+        "date_container": ".dates, .life-dates, .obit-dates",
+        "birth_date": ".birth-date, .born, .date-birth",
+        "death_date": ".death-date, .died, .date-death, .passed",
+        "age_selector": ".age, .obit-age",
+        "content_selector": ".obit-content, .obituary-text, .memorial-content",
+        "photo_selector": ".obit-photo img, .memorial-photo img"
+      },
+      "skip_patterns": [
+        "/obituaries",
+        "/obituary-search",
+        "/search",
+        "/listings",
+        "/send-flowers",
+        "/plant-tree",
+        "/guestbook",
+        "/directions",
+        "tributearchive.com",
+        "google.com",
+        "mailto:",
+        "#",
+        "javascript:"
+      ],
+      "notes": "Uses Tukios/dmAPI platform - fixed with Selenium for JavaScript content loading"
+    }
+  },
+  "archived_obituaries": {},
+  "settings": {
+    "auto_archive_days": 90,
+    "max_obituaries_per_home": 1000,
+    "scrape_interval_hours": 6,
+    "enable_notifications": false
+  }
+}

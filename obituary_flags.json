@@ -1,0 +1,540 @@
+{
+  "Robertson Funeral Home_https___www.robertsonfh.com_obituary_JARRETT-HAWKINS": {
+    "obituary_url": "https://www.robertsonfh.com/obituary/JARRETT-HAWKINS",
+    "funeral_home": "Robertson Funeral Home",
+    "flags": [
+      {
+        "type": "no_date",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:33:07.136783",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:09:42.938765",
+        "resolution_reason": "Dates now available: Birth=August 19, 1988, Death=May 20, 2025"
+      }
+    ],
+    "created_at": "2025-07-26T17:33:07.136772",
+    "updated_at": "2025-07-26T18:09:42.938779"
+  },
+  "Robertson Funeral Home_https___www.robertsonfh.com_obituary_JOY-CHEEVES": {
+    "obituary_url": "https://www.robertsonfh.com/obituary/JOY-CHEEVES",
+    "funeral_home": "Robertson Funeral Home",
+    "flags": [
+      {
+        "type": "no_date",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:33:20.864271",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:09:42.938858",
+        "resolution_reason": "Dates now available: Birth=April 17, 1970, Death=May 27, 2025"
+      }
+    ],
+    "created_at": "2025-07-26T17:33:20.864260",
+    "updated_at": "2025-07-26T18:09:42.938863"
+  },
+  "Robertson Funeral Home_https___www.robertsonfh.com_obituary_STANLEY-SCOTTJR_send-flowers": {
+    "obituary_url": "https://www.robertsonfh.com/obituary/STANLEY-SCOTTJR/send-flowers",
+    "funeral_home": "Robertson Funeral Home",
+    "flags": [
+      {
+        "type": "not_obituary",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:33:27.645836",
+        "resolved": true,
+        "resolved_at": "2025-07-26T17:41:30.261849",
+        "resolution_reason": "Invalid obituary entry removed from data"
+      }
+    ],
+    "created_at": "2025-07-26T17:33:27.645829",
+    "updated_at": "2025-07-26T17:41:30.261864"
+  },
+  "Robertson Funeral Home_https___www.robertsonfh.com_obituary_RICARDO-GOMEZ_send-flowers": {
+    "obituary_url": "https://www.robertsonfh.com/obituary/RICARDO-GOMEZ/send-flowers",
+    "funeral_home": "Robertson Funeral Home",
+    "flags": [
+      {
+        "type": "not_obituary",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:33:33.091217",
+        "resolved": true,
+        "resolved_at": "2025-07-26T17:41:30.261866",
+        "resolution_reason": "Invalid obituary entry removed from data"
+      }
+    ],
+    "created_at": "2025-07-26T17:33:33.091209",
+    "updated_at": "2025-07-26T17:41:30.261867"
+  },
+  "Robertson Funeral Home_https___www.robertsonfh.com_obituary_PINCENTHOUDINI-STRICKLIN": {
+    "obituary_url": "https://www.robertsonfh.com/obituary/PINCENTHOUDINI-STRICKLIN",
+    "funeral_home": "Robertson Funeral Home",
+    "flags": [
+      {
+        "type": "no_date",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:33:44.143597",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:09:42.938899",
+        "resolution_reason": "Dates now available: Birth=February 13, 1968, Death=June 12, 2025"
+      }
+    ],
+    "created_at": "2025-07-26T17:33:44.143586",
+    "updated_at": "2025-07-26T18:09:42.938901"
+  },
+  "Robertson Funeral Home_https___www.tributearchive.com": {
+    "obituary_url": "https://www.tributearchive.com",
+    "funeral_home": "Robertson Funeral Home",
+    "flags": [
+      {
+        "type": "not_obituary",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:34:55.022466",
+        "resolved": true,
+        "resolved_at": "2025-07-26T17:41:30.261869",
+        "resolution_reason": "Invalid obituary entry removed from data"
+      }
+    ],
+    "created_at": "2025-07-26T17:34:55.022455",
+    "updated_at": "2025-07-26T17:41:30.261870"
+  },
+  "Robertson Funeral Home_https___www.robertsonfh.com_obituary_DEBORAH-JOHNSON_send-flowers": {
+    "obituary_url": "https://www.robertsonfh.com/obituary/DEBORAH-JOHNSON/send-flowers",
+    "funeral_home": "Robertson Funeral Home",
+    "flags": [
+      {
+        "type": "not_obituary",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:35:03.030336",
+        "resolved": true,
+        "resolved_at": "2025-07-26T17:41:30.261871",
+        "resolution_reason": "Invalid obituary entry removed from data"
+      }
+    ],
+    "created_at": "2025-07-26T17:35:03.030309",
+    "updated_at": "2025-07-26T17:41:30.261872"
+  },
+  "Robertson Funeral Home_https___www.robertsonfh.com_obituary_RAYMOND-MCGOWAN_send-flowers": {
+    "obituary_url": "https://www.robertsonfh.com/obituary/RAYMOND-MCGOWAN/send-flowers",
+    "funeral_home": "Robertson Funeral Home",
+    "flags": [
+      {
+        "type": "not_obituary",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:35:11.662487",
+        "resolved": true,
+        "resolved_at": "2025-07-26T17:41:30.261873",
+        "resolution_reason": "Invalid obituary entry removed from data"
+      }
+    ],
+    "created_at": "2025-07-26T17:35:11.662477",
+    "updated_at": "2025-07-26T17:41:30.261874"
+  },
+  "Robertson Funeral Home_https___www.robertsonfh.com_obituary_CHRISTOPHER-SCOTT": {
+    "obituary_url": "https://www.robertsonfh.com/obituary/CHRISTOPHER-SCOTT",
+    "funeral_home": "Robertson Funeral Home",
+    "flags": [
+      {
+        "type": "no_date",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:35:18.570985",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:09:42.938946",
+        "resolution_reason": "Dates now available: Birth=May 29, 1975, Death=May 18, 2025"
+      }
+    ],
+    "created_at": "2025-07-26T17:35:18.570977",
+    "updated_at": "2025-07-26T18:09:42.938950"
+  },
+  "Robertson Funeral Home_https___www.robertsonfh.com_obituary_RAYMOND-MCGOWAN": {
+    "obituary_url": "https://www.robertsonfh.com/obituary/RAYMOND-MCGOWAN",
+    "funeral_home": "Robertson Funeral Home",
+    "flags": [
+      {
+        "type": "no_date",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:35:28.543690",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:09:42.939037",
+        "resolution_reason": "Dates now available: Birth=September 18, 1964, Death=June 8, 2025"
+      }
+    ],
+    "created_at": "2025-07-26T17:35:28.543682",
+    "updated_at": "2025-07-26T18:09:42.939041"
+  },
+  "Robertson Funeral Home_https___www.robertsonfh.com_obituary_STANLEY-SCOTTJR": {
+    "obituary_url": "https://www.robertsonfh.com/obituary/STANLEY-SCOTTJR",
+    "funeral_home": "Robertson Funeral Home",
+    "flags": [
+      {
+        "type": "no_date",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:36:05.894850",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:09:42.939074",
+        "resolution_reason": "Dates now available: Birth=May 17, 1988, Death=June 26, 2025"
+      }
+    ],
+    "created_at": "2025-07-26T17:36:05.894842",
+    "updated_at": "2025-07-26T18:09:42.939078"
+  },
+  "Foss Funeral Home_https___www.fossfuneralhome.com_obituary_morris-henderson": {
+    "obituary_url": "https://www.fossfuneralhome.com/obituary/morris-henderson",
+    "funeral_home": "Foss Funeral Home",
+    "flags": [
+      {
+        "type": "no_date",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:36:18.486696",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:09:42.939113",
+        "resolution_reason": "Dates now available: Birth=July 24, 1954, Death=June 26, 2025"
+      }
+    ],
+    "created_at": "2025-07-26T17:36:18.486688",
+    "updated_at": "2025-07-26T18:09:42.939115"
+  },
+  "SLC Texas Funeral Services_https___www.slctx.com_obituary_Jazsima-Davis": {
+    "obituary_url": "https://www.slctx.com/obituary/Jazsima-Davis",
+    "funeral_home": "SLC Texas Funeral Services",
+    "flags": [
+      {
+        "type": "no_date",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:36:34.264718",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:09:42.939143",
+        "resolution_reason": "Dates now available: Birth=August 31, 1993, Death=July 23, 2025"
+      },
+      {
+        "type": "no_photo",
+        "notes": "",
+        "flagged_at": "2025-07-26T18:08:31.721650",
+        "resolved": false
+      }
+    ],
+    "created_at": "2025-07-26T17:36:34.264710",
+    "updated_at": "2025-07-26T18:09:42.939144"
+  },
+  "McDowell Funeral Home_https___www.mcdowellfuneralhome.com_obituary_Larry-Turner": {
+    "obituary_url": "https://www.mcdowellfuneralhome.com/obituary/Larry-Turner",
+    "funeral_home": "McDowell Funeral Home",
+    "flags": [
+      {
+        "type": "no_date",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:36:49.465955",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:09:42.939182",
+        "resolution_reason": "Dates now available: Birth=December 1, 1960, Death=June 29, 2025"
+      }
+    ],
+    "created_at": "2025-07-26T17:36:49.465948",
+    "updated_at": "2025-07-26T18:09:42.939184"
+  },
+  "Wacofhmp_https___www.google.com_search?q=waco-memorial-park": {
+    "obituary_url": "https://www.google.com/search?q=waco-memorial-park",
+    "funeral_home": "Wacofhmp",
+    "flags": [
+      {
+        "type": "not_obituary",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:37:06.099943",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:12:40.737788",
+        "resolution_reason": "Invalid obituary entry removed from data"
+      }
+    ],
+    "created_at": "2025-07-26T17:37:06.099931",
+    "updated_at": "2025-07-26T18:12:40.737801"
+  },
+  "Wacofhmp_https___www.wacofhmp.com_obituaries": {
+    "obituary_url": "https://www.wacofhmp.com/obituaries",
+    "funeral_home": "Wacofhmp",
+    "flags": [
+      {
+        "type": "not_obituary",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:37:27.467213",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:12:40.737803",
+        "resolution_reason": "Invalid obituary entry removed from data"
+      }
+    ],
+    "created_at": "2025-07-26T17:37:27.467203",
+    "updated_at": "2025-07-26T18:12:40.737804"
+  },
+  "Robertson Funeral Home_https___www.robertsonfh.com_obituary_RICARDO-GOMEZ": {
+    "obituary_url": "https://www.robertsonfh.com/obituary/RICARDO-GOMEZ",
+    "funeral_home": "Robertson Funeral Home",
+    "flags": [
+      {
+        "type": "no_date",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:44:27.586381",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:09:42.939225",
+        "resolution_reason": "Dates now available: Birth=October 10, 1956, Death=July 16, 2025"
+      }
+    ],
+    "created_at": "2025-07-26T17:44:27.586373",
+    "updated_at": "2025-07-26T18:09:42.939229"
+  },
+  "Foss Funeral Home_https___www.fossfuneralhome.com_obituary_mary-keltner": {
+    "obituary_url": "https://www.fossfuneralhome.com/obituary/mary-keltner",
+    "funeral_home": "Foss Funeral Home",
+    "flags": [
+      {
+        "type": "no_date",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:44:44.016988",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:09:42.939260",
+        "resolution_reason": "Dates now available: Birth=March 22, 1940, Death=May 26, 2025"
+      },
+      {
+        "type": "no_photo",
+        "notes": "\\",
+        "flagged_at": "2025-07-26T18:10:49.542749",
+        "resolved": false
+      }
+    ],
+    "created_at": "2025-07-26T17:44:44.016978",
+    "updated_at": "2025-07-26T18:10:49.542757"
+  },
+  "McDowell Funeral Home_https___www.tributearchive.com": {
+    "obituary_url": "https://www.tributearchive.com",
+    "funeral_home": "McDowell Funeral Home",
+    "flags": [
+      {
+        "type": "not_obituary",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:44:54.801974",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:12:40.737805",
+        "resolution_reason": "Invalid obituary entry removed from data"
+      }
+    ],
+    "created_at": "2025-07-26T17:44:54.801964",
+    "updated_at": "2025-07-26T18:12:40.737806"
+  },
+  "SLC Texas Funeral Services_https___www.slctx.com_listings": {
+    "obituary_url": "https://www.slctx.com/listings",
+    "funeral_home": "SLC Texas Funeral Services",
+    "flags": [
+      {
+        "type": "not_obituary",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:45:03.355030",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:12:40.737807",
+        "resolution_reason": "Invalid obituary entry removed from data"
+      }
+    ],
+    "created_at": "2025-07-26T17:45:03.355020",
+    "updated_at": "2025-07-26T18:12:40.737807"
+  },
+  "McDowell Funeral Home_https___www.mcdowellfuneralhome.com_listings": {
+    "obituary_url": "https://www.mcdowellfuneralhome.com/listings",
+    "funeral_home": "McDowell Funeral Home",
+    "flags": [
+      {
+        "type": "not_obituary",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:45:13.641489",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:12:40.737808",
+        "resolution_reason": "Invalid obituary entry removed from data"
+      }
+    ],
+    "created_at": "2025-07-26T17:45:13.641480",
+    "updated_at": "2025-07-26T18:12:40.737809"
+  },
+  "McDowell Funeral Home_https___www.mcdowellfuneralhome.com_obituary_Lueverne-James": {
+    "obituary_url": "https://www.mcdowellfuneralhome.com/obituary/Lueverne-James",
+    "funeral_home": "McDowell Funeral Home",
+    "flags": [
+      {
+        "type": "no_date",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:45:26.024282",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:09:42.939291",
+        "resolution_reason": "Dates now available: Birth=February 24, 1925, Death=July 11, 2025"
+      }
+    ],
+    "created_at": "2025-07-26T17:45:26.024271",
+    "updated_at": "2025-07-26T18:09:42.939292"
+  },
+  "Slctx_https___www.slctx.com_obituary_Michael-Gomez_send-flowers": {
+    "obituary_url": "https://www.slctx.com/obituary/Michael-Gomez/send-flowers",
+    "funeral_home": "Slctx",
+    "flags": [
+      {
+        "type": "incomplete_content",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:45:50.952533",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:12:40.737816",
+        "resolution_reason": "Send-flowers page should not be scraped as obituary"
+      }
+    ],
+    "created_at": "2025-07-26T17:45:50.952525",
+    "updated_at": "2025-07-26T18:12:40.737817"
+  },
+  "Whbfamily_https___www.whbfamily.com_obituaries": {
+    "obituary_url": "https://www.whbfamily.com/obituaries",
+    "funeral_home": "Whbfamily",
+    "flags": [
+      {
+        "type": "not_obituary",
+        "notes": "",
+        "flagged_at": "2025-07-26T17:46:01.468650",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:12:40.737810",
+        "resolution_reason": "Invalid obituary entry removed from data"
+      }
+    ],
+    "created_at": "2025-07-26T17:46:01.468639",
+    "updated_at": "2025-07-26T18:12:40.737810"
+  },
+  "SLC Texas Funeral Services_https___www.tributearchive.com": {
+    "obituary_url": "https://www.tributearchive.com",
+    "funeral_home": "SLC Texas Funeral Services",
+    "flags": [
+      {
+        "type": "not_obituary",
+        "notes": "",
+        "flagged_at": "2025-07-26T18:08:05.475831",
+        "resolved": true,
+        "resolved_at": "2025-07-26T18:12:40.737811",
+        "resolution_reason": "Invalid obituary entry removed from data"
+      }
+    ],
+    "created_at": "2025-07-26T18:08:05.475823",
+    "updated_at": "2025-07-26T18:12:40.737812"
+  },
+  "SLC Texas Funeral Services_https___www.slctx.com_obituary_Michael-Gomez": {
+    "obituary_url": "https://www.slctx.com/obituary/Michael-Gomez",
+    "funeral_home": "SLC Texas Funeral Services",
+    "flags": [
+      {
+        "type": "no_photo",
+        "notes": "",
+        "flagged_at": "2025-07-26T18:08:40.781039",
+        "resolved": false
+      }
+    ],
+    "created_at": "2025-07-26T18:08:40.781031",
+    "updated_at": "2025-07-26T18:08:40.781041"
+  },
+  "McDowell Funeral Home_https___www.mcdowellfuneralhome.com_obituary_Mildred-Howard": {
+    "obituary_url": "https://www.mcdowellfuneralhome.com/obituary/Mildred-Howard",
+    "funeral_home": "McDowell Funeral Home",
+    "flags": [
+      {
+        "type": "no_photo",
+        "notes": "",
+        "flagged_at": "2025-07-26T18:08:48.578533",
+        "resolved": false
+      }
+    ],
+    "created_at": "2025-07-26T18:08:48.578525",
+    "updated_at": "2025-07-26T18:08:48.578535"
+  },
+  "SLC Texas Funeral Services_https___www.slctx.com_obituary_Eddie-Satchell": {
+    "obituary_url": "https://www.slctx.com/obituary/Eddie-Satchell",
+    "funeral_home": "SLC Texas Funeral Services",
+    "flags": [
+      {
+        "type": "no_photo",
+        "notes": "",
+        "flagged_at": "2025-07-26T18:08:58.645603",
+        "resolved": false
+      }
+    ],
+    "created_at": "2025-07-26T18:08:58.645595",
+    "updated_at": "2025-07-26T18:08:58.645605"
+  },
+  "SLC Texas Funeral Services_https___www.slctx.com_obituary_Timothy-Bowie": {
+    "obituary_url": "https://www.slctx.com/obituary/Timothy-Bowie",
+    "funeral_home": "SLC Texas Funeral Services",
+    "flags": [
+      {
+        "type": "no_photo",
+        "notes": "",
+        "flagged_at": "2025-07-26T18:09:10.106058",
+        "resolved": false
+      }
+    ],
+    "created_at": "2025-07-26T18:09:10.106047",
+    "updated_at": "2025-07-26T18:09:10.106061"
+  },
+  "Robertson Funeral Home_https___www.robertsonfh.com_obituary_LAURA-MASSINGTON": {
+    "obituary_url": "https://www.robertsonfh.com/obituary/LAURA-MASSINGTON",
+    "funeral_home": "Robertson Funeral Home",
+    "flags": [
+      {
+        "type": "no_photo",
+        "notes": "",
+        "flagged_at": "2025-07-26T18:10:33.820706",
+        "resolved": false
+      }
+    ],
+    "created_at": "2025-07-26T18:10:33.820685",
+    "updated_at": "2025-07-26T18:10:33.820708"
+  },
+  "Grace Gardens Funeral Home_https___www.gracegardensfh.com_obituaries_kathleen-lindsey": {
+    "obituary_url": "https://www.gracegardensfh.com/obituaries/kathleen-lindsey",
+    "funeral_home": "Grace Gardens Funeral Home",
+    "flags": [
+      {
+        "type": "no_date",
+        "notes": "",
+        "flagged_at": "2025-07-26T21:15:45.940684",
+        "resolved": false
+      }
+    ],
+    "created_at": "2025-07-26T21:15:45.940676",
+    "updated_at": "2025-07-26T21:15:45.940687"
+  },
+  "Grace Gardens Funeral Home_https___www.gracegardensfh.com_obituaries_vernon-hoppe": {
+    "obituary_url": "https://www.gracegardensfh.com/obituaries/vernon-hoppe",
+    "funeral_home": "Grace Gardens Funeral Home",
+    "flags": [
+      {
+        "type": "no_date",
+        "notes": "",
+        "flagged_at": "2025-07-26T21:15:51.502480",
+        "resolved": false
+      }
+    ],
+    "created_at": "2025-07-26T21:15:51.502468",
+    "updated_at": "2025-07-26T21:15:51.502483"
+  },
+  "Grace Gardens Funeral Home_https___www.gracegardensfh.com_obituaries_peggy-shelton": {
+    "obituary_url": "https://www.gracegardensfh.com/obituaries/peggy-shelton",
+    "funeral_home": "Grace Gardens Funeral Home",
+    "flags": [
+      {
+        "type": "no_date",
+        "notes": "",
+        "flagged_at": "2025-07-26T21:15:54.678613",
+        "resolved": false
+      }
+    ],
+    "created_at": "2025-07-26T21:15:54.678603",
+    "updated_at": "2025-07-26T21:15:54.678616"
+  },
+  "Grace Gardens Funeral Home_https___www.gracegardensfh.com_obituaries_billy-spivey": {
+    "obituary_url": "https://www.gracegardensfh.com/obituaries/billy-spivey",
+    "funeral_home": "Grace Gardens Funeral Home",
+    "flags": [
+      {
+        "type": "no_date",
+        "notes": "",
+        "flagged_at": "2025-07-26T21:15:58.950679",
+        "resolved": false
+      }
+    ],
+    "created_at": "2025-07-26T21:15:58.950671",
+    "updated_at": "2025-07-26T21:15:58.950681"
+  }
+}
