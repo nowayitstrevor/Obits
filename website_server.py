@@ -29,6 +29,11 @@ SCRAPE_STATUS = {
     "sources": [],
 }
 SCRAPE_LOCK = threading.Lock()
+WEBSITE_DATA_FILES = [
+    "website_obituaries.json",
+    "obituaries_for_website.json",
+    "obituaries_gracegardens.json",
+]
 
 
 def now_iso() -> str:
@@ -149,10 +154,65 @@ def merge_records_with_previous(new_records: list, previous_records: list, refre
     return merged
 
 
+def read_json_file(path: str) -> dict | list | None:
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as handle:
+            return json.load(handle)
+    except Exception:
+        return None
+
+
+def capture_current_website_snapshot() -> tuple[dict[str, str], dict[str, int]]:
+    snapshot: dict[str, str] = {}
+    summary = {"total_obituaries": 0, "working_funeral_homes": 0}
+
+    for file_name in WEBSITE_DATA_FILES:
+        file_path = os.path.join(BASE_DIR, file_name)
+        if not os.path.exists(file_path):
+            continue
+        try:
+            with open(file_path, "r", encoding="utf-8") as handle:
+                content = handle.read()
+            snapshot[file_name] = content
+        except Exception:
+            continue
+
+    current = read_json_file(os.path.join(BASE_DIR, "website_obituaries.json"))
+    if isinstance(current, dict):
+        current_summary = current.get("summary", {})
+        summary["total_obituaries"] = int(current_summary.get("total_obituaries", 0) or 0)
+        summary["working_funeral_homes"] = int(current_summary.get("working_funeral_homes", 0) or 0)
+
+    return snapshot, summary
+
+
+def restore_website_snapshot(snapshot: dict[str, str]) -> None:
+    for file_name, content in snapshot.items():
+        file_path = os.path.join(BASE_DIR, file_name)
+        with open(file_path, "w", encoding="utf-8") as handle:
+            handle.write(content)
+
+
+def should_restore_previous_dataset(previous_summary: dict[str, int], current_summary: dict[str, int], safe_mode: bool) -> bool:
+    if not safe_mode:
+        return False
+
+    previous_total = int(previous_summary.get("total_obituaries", 0) or 0)
+    current_total = int(current_summary.get("total_obituaries", 0) or 0)
+    previous_homes = int(previous_summary.get("working_funeral_homes", 0) or 0)
+    current_homes = int(current_summary.get("working_funeral_homes", 0) or 0)
+
+    return current_total < previous_total or current_homes < previous_homes
+
+
 def run_scrape_job() -> None:
     try:
         import scrape_selected_obituaries as selected_scraper
         import bundle_for_website
+
+        previous_snapshot, previous_summary = capture_current_website_snapshot()
 
         all_sources = selected_scraper.load_selected_sources(include_inactive=False, source_keys=None)
         safe_mode = is_scraper_safe_mode_enabled()
@@ -239,16 +299,29 @@ def run_scrape_job() -> None:
         selected_scraper.write_output(merged_records, all_results)
         bundle_for_website.create_unified_dataset()
 
+        latest_dataset = read_json_file(os.path.join(BASE_DIR, "website_obituaries.json"))
+        latest_summary = {"total_obituaries": 0, "working_funeral_homes": 0}
+        if isinstance(latest_dataset, dict):
+            latest = latest_dataset.get("summary", {})
+            latest_summary["total_obituaries"] = int(latest.get("total_obituaries", 0) or 0)
+            latest_summary["working_funeral_homes"] = int(latest.get("working_funeral_homes", 0) or 0)
+
+        guard_triggered = should_restore_previous_dataset(previous_summary, latest_summary, safe_mode=safe_mode)
+        if guard_triggered:
+            restore_website_snapshot(previous_snapshot)
+            latest_summary = previous_summary
+
         mode_suffix = " (safe mode)" if safe_mode else ""
+        guard_suffix = " with anti-regression restore" if guard_triggered else ""
 
         _set_scrape_status(
             {
                 "state": "completed",
-                "message": f"Scrape and bundle complete{mode_suffix}.",
+                "message": f"Scrape and bundle complete{mode_suffix}{guard_suffix}.",
                 "finishedAt": now_iso(),
                 "currentSourceKey": None,
                 "currentSourceName": None,
-                "totalObituaries": len(merged_records),
+                "totalObituaries": int(latest_summary.get("total_obituaries", len(merged_records)) or 0),
             }
         )
     except Exception as error:
