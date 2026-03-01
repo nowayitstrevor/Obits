@@ -64,6 +64,18 @@ A comprehensive obituary scraping system for local funeral homes with website in
 & .\refresh_and_push_data.ps1
 ```
 
+### Automate daily refresh via Windows Task Scheduler
+```powershell
+# Create/update daily task (default 07:00)
+& .\register_refresh_task.ps1
+
+# Or pick a custom time (24-hour format)
+& .\register_refresh_task.ps1 -Time "18:30"
+
+# Run task immediately
+schtasks /Run /TN "ObitScraper-RefreshAndPush"
+```
+
 Optional switches:
 ```powershell
 # Skip scraping and only rebuild + push current data files
