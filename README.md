@@ -59,6 +59,23 @@ A comprehensive obituary scraping system for local funeral homes with website in
 & .\run_app.ps1
 ```
 
+### Refresh data and push JSON to GitHub (for Railway)
+```powershell
+& .\refresh_and_push_data.ps1
+```
+
+Optional switches:
+```powershell
+# Skip scraping and only rebuild + push current data files
+& .\refresh_and_push_data.ps1 -SkipScrape
+
+# Skip bundling and only push scraper output JSON
+& .\refresh_and_push_data.ps1 -SkipBundle
+
+# Custom commit message
+& .\refresh_and_push_data.ps1 -CommitMessage "Weekly obituary refresh"
+```
+
 Optional switches:
 ```powershell
 # Keep full history in storage (default), rebuild dashboard, do not start server
