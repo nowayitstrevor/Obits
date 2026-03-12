@@ -87,23 +87,38 @@ CLOUD_SCRAPER = (
 def create_selenium_driver():
     try:
         from selenium import webdriver
+        from selenium.webdriver.chrome.options import Options as ChromeOptions
+        from selenium.webdriver.edge.options import Options as EdgeOptions
         from selenium.webdriver.firefox.options import Options as FirefoxOptions
-        from selenium.webdriver.firefox.service import Service as FirefoxService
-        from webdriver_manager.firefox import GeckoDriverManager
     except Exception:
         return None
 
-    options = FirefoxOptions()
-    options.add_argument("--headless")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--window-size=1920,1080")
+    def _base_flags(opts: Any) -> Any:
+        opts.add_argument("--headless")
+        opts.add_argument("--disable-gpu")
+        opts.add_argument("--no-sandbox")
+        opts.add_argument("--disable-dev-shm-usage")
+        opts.add_argument("--window-size=1920,1080")
+        return opts
+
+    # Try Edge/Chrome first on Windows, then Firefox.
+    try:
+        edge_options = _base_flags(EdgeOptions())
+        edge_options.use_chromium = True
+        return webdriver.Edge(options=edge_options)
+    except BaseException:
+        pass
 
     try:
-        service = FirefoxService(GeckoDriverManager().install())
-        return webdriver.Firefox(service=service, options=options)
-    except Exception:
+        chrome_options = _base_flags(ChromeOptions())
+        return webdriver.Chrome(options=chrome_options)
+    except BaseException:
+        pass
+
+    try:
+        firefox_options = _base_flags(FirefoxOptions())
+        return webdriver.Firefox(options=firefox_options)
+    except BaseException:
         return None
 
 
@@ -935,9 +950,24 @@ def scrape_source(
 
     try:
         listing_response = fetch_with_fallback(listing_url, prefer_cloudscraper=True)
-        listing_response.raise_for_status()
+        listing_html = ""
 
-        listing_soup = BeautifulSoup(listing_response.text, "html.parser")
+        if listing_response.status_code < 400 and str(listing_response.text or "").strip():
+            listing_html = listing_response.text
+
+        if not listing_html and listing_response.status_code == 403:
+            if selenium_driver is None:
+                selenium_driver = create_selenium_driver()
+            if selenium_driver is not None:
+                selenium_html = fetch_page_html_with_selenium(selenium_driver, listing_url)
+                if selenium_html and selenium_html.strip():
+                    listing_html = selenium_html
+
+        if not listing_html:
+            listing_response.raise_for_status()
+            listing_html = listing_response.text
+
+        listing_soup = BeautifulSoup(listing_html, "html.parser")
         custom_skips = {str(item).lower() for item in config.get("skip_patterns", []) if str(item).strip()}
         skip_patterns = DEFAULT_SKIP_PATTERNS | custom_skips
 
