@@ -309,6 +309,10 @@ Run scheduled task now:
 schtasks /Run /TN "ObitScraper-LocalScrapeToNeon"
 ```
 
+Each scheduled run writes a log under `logs/` and now appends a `Neon Post-Run Summary` section with:
+- latest `scrape_runs` status
+- obituary counts grouped by `source_key`
+
 ## 🌐 Website Features
 
 - **Responsive Design**: Works on desktop and mobile
