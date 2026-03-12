@@ -1,0 +1,142 @@
+This document is designed to serve as the Single Source of Truth for your agentic coding team. It defines the technical boundaries, the state-machine logic of the PostgreSQL database, and the specific integration requirements for the Facebook Graph API.
+📄 Grounding Document: Obituary Aggregator & Social Automation
+
+Project Goal: A streamlined pipeline to scrape, refine, schedule, and autonomously post local obituaries to Facebook.
+1. System Architecture & Data Flow
+
+The system operates as a linear state machine within a PostgreSQL database. Each obituary must progress through the following tabs/states:
+
+    Recent (Inbound): Raw data from scrapers.
+
+    Staged (Refinement): Held for admin review/editing.
+
+    Scheduled (Queued): Assigned a specific timestamp for posting.
+
+    Posted (Archive): Successfully pushed to the Facebook API.
+
+Data Schema Requirements
+
+Each record in the obituaries table must contain:
+
+    id: Primary Key (UUID).
+
+    full_name: String.
+
+    dob: Date (Optional/Nullable).
+
+    dod: Date.
+
+    original_url: Source link for the comment.
+
+    image_url: Scraped image path (local or S3).
+
+    status: Enum (Recent, Staged, Scheduled, Posted).
+
+    scheduled_at: Timestamp (Null until moved to Scheduled).
+
+2. Admin Workflow & UI Logic
+
+The agentic team must prioritize the following transition logic in the app:
+
+    Manual Gatekeeping: Admins move records from Recent → Staged.
+
+    Editing Suite: In the Staged tab, the UI must allow text overrides for Name, DOB, and DOD to fix scraping hallucinations.
+
+    Scheduling: Moving a record to Scheduled requires a mandatory date_time picker. The agent must build a background worker (e.g., Celery or Cron) that polls the DB every 1-5 minutes for records where scheduled_at <= NOW().
+
+3. Facebook API Integration (The "Two-Step" Post)
+
+To maximize reach and follow the project's specific engagement strategy, the agent must implement a sequential posting logic:
+
+    Step 1 (The Post): Upload the image_url as a native photo post. The caption should be structured as:
+
+        [Full Name]
+        [DOB] — [DOD]
+
+    Step 2 (The Engagement): Capture the post_id from the Step 1 response. Immediately trigger a second API call to create a Comment on that post_id containing the original_url.
+
+    Sandbox Protocol: All initial API development must point to the Facebook Sandbox Page credentials provided in the .env file.
+
+4. Automation & Intelligence Roadmap
+
+While the current version relies on human movement between tabs, the agents should architect the backend to support:
+
+    Deduplication: A logic layer that flags incoming scrapers if full_name and dod match an existing record within a 30-day window.
+
+    ML Scoring (Future Phase): Implement a confidence_score field.
+
+        If confidence_score > 0.95 (no missing fields, high-res image), the system should suggest an "Auto-Stage" or "Auto-Schedule" flag.
+
+5. Technical Constraints
+
+    Database: PostgreSQL (target architecture). Current running implementation is SQLite (`data/app.db`) with schema/state parity planned before migration.
+
+    Scraper Frequency: Once per 24-hour cycle.
+
+    Error Handling: If the Facebook API returns an error (e.g., token expired, image too small), the record must be reverted to Staged with an error_log flag for admin attention.
+
+6. Implementation Status (March 10, 2026)
+
+Completed and validated in current environment:
+
+    State Machine: Implemented with statuses new -> staged -> scheduled -> posted -> archived (UI labels can map to Recent/Staged/Scheduled/Posted).
+
+    Admin Workflow:
+        - Manual gatekeeping (new -> staged) is operational.
+        - Staged editing suite for name/DOB/DOD overrides is operational.
+        - Scheduling requires a future timestamp and enforces validation.
+
+    Background Publishing:
+        - Continuous worker implemented (polling loop) with DB-backed status heartbeat.
+        - Cross-process runtime lock implemented to avoid concurrent due-run collisions.
+
+    Facebook Two-Step Sandbox Integration:
+        - Step 1 photo post and Step 2 first-comment URL are implemented and verified.
+        - Strict mode (fallback disabled) has been validated with successful two-step publish.
+
+    Error Handling and Recovery:
+        - On publish failure, records transition scheduled -> staged with last_error populated.
+        - Additional strict safety: if Step 1 succeeds but Step 2 fails, created photo post is deleted to prevent orphan posts without obituary-link comments.
+
+    Preflight Safety Gate:
+        - Publish preflight endpoint is implemented (light and deep modes).
+        - Deep mode probes post + comment capability and cleans up probe artifacts.
+        - Smoke test now runs deep preflight by default before scheduling/publishing.
+
+7. Remaining Work To Fully Match Grounding Targets
+
+Roadmap-aligned workstreams:
+
+    1) PostgreSQL Migration
+        - Build SQLite -> PostgreSQL migration plan with schema parity checks.
+        - Preserve queue transitions, audit history, and publish worker semantics during staged cutover.
+
+    2) UI Preflight Gating
+        - Surface current preflight status in admin UI (including blocking checks).
+        - Block or warn publish/run-due actions when blocking checks fail.
+
+    3) Retry Policy and Failure Triage UX
+        - Add capped retry policy for publish failures (retry_count/retry_at model).
+        - Keep strict fallback behavior (scheduled -> staged with last_error) and add operator-facing failure badges/filters.
+
+    4) Deduplication Rule (Grounding Section 4)
+        - Implement ingest-time duplicate candidate detection using normalized full_name + dod within a 30-day window.
+        - Add duplicate marker fields and review workflow.
+
+    5) Confidence Scoring Roadmap (Grounding Section 4)
+        - Add confidence_score plus non-blocking suggest_auto_stage/suggest_auto_schedule hints.
+        - Keep manual gatekeeping as default until confidence thresholds are validated.
+
+    6) Operational Hardening and Secret Lifecycle
+        - Add stale-worker alerting and scheduled deep preflight health checks.
+        - Complete secret lifecycle hardening (environment-only secret handling, token/permission drift monitoring, and credential rotation runbook).
+
+8. Definition of Continuation
+
+Next execution order (aligned to latest roadmap updates in whats next.md):
+
+    1) UI preflight gating + retry policy/failure triage UX.
+    2) Operational hardening and secret lifecycle tasks.
+    3) Deduplication ingest rule and duplicate review flow.
+    4) Confidence scoring with suggestion-only automation hints.
+    5) PostgreSQL migration planning, then staged cutover once stability checkpoint is met.

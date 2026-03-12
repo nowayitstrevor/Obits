@@ -1,0 +1,303 @@
+Here is how i want this app to work:
+
+Infrastructure needed:
+- Product spec + backlog in markdown (MVP scope, success criteria, edge cases).
+- Data contract for obituary records (required fields, optional fields, status lifecycle).
+- Environment strategy (local dev on Windows, production on Linux server).
+
+First of all it needs to reliably pull all obits from all of the obit websites that we have registered. If a site fails to pull, there needs to be debugging to state that the site is not pulling properly.
+
+Infrastructure needed:
+- Scraper registry/config store (site URL, parser type, selectors, pagination rules, last successful run).
+- Per-site scraper health checks and structured run logs (success count, error type, retry count, timeout).
+- Retry + circuit breaker logic (e.g., 3 retries with backoff, then flag site as degraded).
+- Monitoring table/file for run results by site and timestamp to power UI alerts.
+
+2. Our end goal with this app is that we are autonomously scraping obit data, aggregating it to one feed, and then able to connect it to our facebook newsletter page, so that we can schedule the obits to post on facebook. 
+
+Infrastructure needed:
+- Automated pipeline stages: scrape -> normalize -> deduplicate -> aggregate feed -> publish queue.
+- Canonical storage (SQLite/Postgres) with unique keys to prevent duplicate obits.
+- Facebook integration service (Meta Graph API) for draft creation and scheduled publishing.
+- Background worker/queue for scheduled posting and retrying failed publish attempts.
+
+2a. The posts will have the persons name, date of birth, date of death, picture if it exists, and the link to the obituary website in the comment section.
+
+Infrastructure needed:
+- Post template engine with strict field mapping: name, DOB, DOD, photo URL, obituary link.
+- Validation rules for required fields and date parsing/format normalization.
+- Media handling pipeline (download/cache image, fallback image when missing).
+- Facebook post workflow: create post body + add source link in first comment.
+
+3. We will need a main feed that will show new obits, then we will need a staging tab where we will be staging new obits as facebook posts, then a scheduling tab that will show posts ready to be scheduled to post to facebook, and then maybe an embeded facebook page as the last tab to confirm that the posts are being posted correctly.
+
+Infrastructure needed:
+- UI state model with tabs: New Feed, Staging, Scheduling, Facebook Verification.
+- API endpoints for each state transition (new -> staged -> scheduled -> posted).
+- Role-safe action controls (stage all, schedule selected, publish now, rollback to staging).
+- Embedded Facebook page view (iframe or linked verification panel, depending on Meta constraints).
+- Audit trail for every transition so team can trace who/what moved a post.
+
+4. Once obits are scraped, staged, scheduled, and posted they will be archived in the app. 
+
+Infrastructure needed:
+- Lifecycle status field and archive table/partition for completed items.
+- Retention rules (e.g., keep active 30 days, archive indefinitely).
+- Archive browsing/search endpoints (by name, date, funeral home, publish status).
+- Immutable publish metadata (post ID, scheduled time, actual publish time, failure reason).
+
+5. I have a linux server pc that is always on that can perform the scrapings daily, so instead of using windows, lets create an automated script for linux and then wire up a framework to make that happen every 24 hours, again i want debugging to be present in the obits page UI that will alert if any pages are not finding new obits. Maybe we can scrape the pages, and as long as it finds the last scraped obit it gives the clear, but if it finds no new obits, or the last scraped obit for that site it can flag it for reprogramming?
+
+Infrastructure needed:
+- Linux deployment scripts (systemd service + systemd timer or cron) for 24-hour scrape cadence.
+- Central scheduler command that runs all sites and writes one run report JSON/DB row per site.
+- Freshness validation logic:
+	- Green: last known obituary still present and scraper completed normally.
+	- Yellow: completed but no new obits within expected window.
+	- Red: scraper error, parse mismatch, or last-known obit not found.
+- UI debug panel showing site health, last success time, last error, and reprogramming flag.
+- Alerting hooks (email/Slack/Telegram optional) when a site enters Red state.
+
+Suggested implementation order (MVP):
+1) Normalize and store all obits in one canonical DB model.
+2) Add per-site run status + health checks + UI alerts.
+3) Build Feed/Staging/Scheduling tabs and state transitions.
+4) Implement Facebook draft + scheduling integration.
+5) Add archive and Linux daily automation (systemd timer).
+
+--------------------------------------------------
+Local-First Execution Plan (with Linux-ready design)
+--------------------------------------------------
+
+Phase 1 - Data foundation + status model (run locally)
+Goal:
+- Keep existing scrapers, but add one canonical local DB for app workflow.
+
+Build:
+- Add `data/app.db` (SQLite) with tables:
+	- `obituaries` (normalized records + dedupe hash + sourceKey)
+	- `post_queue` (status: new/staged/scheduled/posted/archived)
+	- `scrape_runs` (run metadata)
+	- `scrape_source_status` (per-site health + error + freshness)
+- Add one ingestion service that reads scraper output and upserts into DB.
+
+Acceptance:
+- One local command refreshes data and updates DB without duplicates.
+- App can query unified feed from DB instead of only JSON files.
+
+Phase 2 - Reliability + debugging panel (run locally)
+Goal:
+- Detect scraper breakage quickly and show clear status in UI.
+
+Build:
+- Extend scrape pipeline to persist per-site status:
+	- success/failure
+	- count scraped
+	- last error
+	- last known obituary check result
+- Add health evaluator:
+	- Green = scrape ok + last known obit still found
+	- Yellow = scrape ok but no new obits in expected window
+	- Red = scrape failed OR selector/parsing mismatch OR last known obit missing
+- Add API endpoint for dashboard health summary.
+
+Acceptance:
+- UI shows which site failed and why.
+- Re-run from UI/API updates status immediately.
+
+Phase 3 - Feed/Staging/Scheduling workflow (run locally)
+Goal:
+- Implement full operational flow before Facebook automation.
+
+Build:
+- Add tab APIs:
+	- Feed (new)
+	- Staging
+	- Scheduling
+	- Posted/Archive
+- Add transition endpoints:
+	- `new -> staged`
+	- `staged -> scheduled`
+	- `scheduled -> posted`
+	- `posted -> archived`
+	- rollback endpoints for mistakes
+
+Acceptance:
+- Team can move obits through all states from local UI.
+- Every transition is timestamped/auditable.
+
+Phase 4 - Facebook integration (local test mode first)
+Goal:
+- Generate publish-ready posts with safe testing.
+
+Build:
+- Add post template formatter:
+	- name
+	- DOB
+	- DOD
+	- image (if exists)
+	- source link comment payload
+- Add Facebook adapter interface with two modes:
+	- `mock` mode (local dev, no external posting)
+	- `live` mode (Meta Graph API)
+- Store external publish IDs and error payloads in DB.
+
+Acceptance:
+- In mock mode, scheduled jobs create verifiable payloads.
+- In live mode, successful post IDs are recorded.
+
+Phase 5 - Archive + reporting
+Goal:
+- Keep active queues clean and preserve history.
+
+Build:
+- Auto-archive posted items after configurable window.
+- Add archive search filters (name/date/source/status).
+- Add metrics panel (new today, staged, scheduled, posted, failed).
+
+Acceptance:
+- Posted items move out of active queue automatically.
+- Historical lookup works for operations/debugging.
+
+Phase 6 - Linux deployment (after local stability)
+Goal:
+- Run the same pipeline every 24 hours on always-on Linux server.
+
+Build:
+- Add Linux scripts:
+	- `scripts/run_daily_pipeline.sh`
+	- `deploy/systemd/obits-pipeline.service`
+	- `deploy/systemd/obits-pipeline.timer`
+- Keep environment variables in `.env` (API keys, safe mode flags, runtime config).
+- Add log outputs to rotating files + optional alert webhook when status turns Red.
+
+Acceptance:
+- `systemctl status obits-pipeline.timer` confirms 24-hour cadence.
+- Failed runs and stale sources are visible in UI debug panel.
+
+Definition of done for MVP:
+- All registered sources run from one command and populate unified feed.
+- Per-site health/debugging visible in UI.
+- Feed -> Staging -> Scheduling -> Posted -> Archive lifecycle is functional.
+- Facebook posting path works in mock mode (and live mode once credentials are configured).
+- Linux timer executes pipeline daily with logs and failure visibility.
+
+Recommended immediate next sprint (what to build first):
+1) Add SQLite schema + ingestion service.
+2) Persist `scrape_source_status` and add health endpoint.
+3) Wire feed/staging/scheduling tabs to DB-backed endpoints.
+
+--------------------------------------------------
+Current build status (as of now)
+--------------------------------------------------
+
+Completed:
+- Phase 1 foundation is in place:
+	- SQLite database (`data/app.db`) design + ingestion pipeline implemented.
+	- Canonical tables created (`obituaries`, `post_queue`, `scrape_runs`, `scrape_source_status`, `scrape_source_latest`).
+	- Local ingestion command exists for selected scrape output.
+- Phase 2 reliability/debugging core is in place:
+	- Source health persisted each run.
+	- Continuity check implemented (last-known obituary still present).
+	- Action-required/reprogramming flag implemented when health rules fail.
+	- API endpoints added for DB feed, source health, and action-required sources.
+	- UI panel + badge added to show action-required scraper sources.
+
+In progress:
+- Hardening and tuning freshness thresholds over multiple days of real runs.
+
+Next focus (Phase 3 execution plan)
+--------------------------------------------------
+
+Goal:
+- Build full operational workflow: Feed -> Staging -> Scheduling -> Posted/Archive.
+
+Step 1 - Queue state transition API (backend first):
+- Add endpoints to move records through statuses:
+	- `new -> staged`
+	- `staged -> scheduled`
+	- `scheduled -> posted`
+	- `posted -> archived`
+	- rollback paths (`scheduled -> staged`, `staged -> new`)
+- Add timestamp fields for transitions and failure notes where relevant.
+
+Step 2 - Feed endpoints by status:
+- Add endpoint(s) that return DB records by queue status for each tab.
+- Keep current obit display available while introducing status-scoped responses.
+
+Step 3 - UI tabs wired to status APIs:
+- Add tabs for New Feed, Staging, Scheduling, Posted/Archive.
+- Add simple row actions in each tab to move items to next/previous state.
+
+Step 4 - Scheduling readiness:
+- Add `scheduled_for` validation in backend (must be future timestamp).
+- Mark invalid scheduling attempts with clear API errors for UI display.
+
+Step 5 - Auditability:
+- Persist who/what/when metadata for each state change (at minimum: action, timestamp).
+
+Acceptance criteria for this refocused sprint:
+- Team can move obituaries across all lifecycle states from the app UI.
+- All transitions are persisted in DB and reflected immediately in tab counts.
+- Action-required source alerts continue to function alongside workflow tabs.
+
+Phase 4 preview (after Phase 3 complete):
+- Implement Facebook `mock` publisher first, then swap to `live` Graph API mode.
+
+--------------------------------------------------
+Implementation update (March 1, 2026)
+--------------------------------------------------
+
+Completed since last update:
+- Phase 3 workflow is now operational end-to-end in local app UI/API:
+	- Queue transition APIs implemented with valid transition enforcement.
+	- Status-scoped queue endpoints implemented (`new`, `staged`, `scheduled`, `posted`, `archived`).
+	- Queue tabs in UI now pull from DB status endpoints.
+	- Scheduling guardrails implemented (`scheduled_for` must be a future timestamp).
+	- Transition audit trail implemented (`queue_transition_audit`) with actor + metadata.
+	- Transition history APIs and UI history panel implemented.
+- Phase 4 has started:
+	- Staging tab now includes Facebook-style post preview.
+	- Backend preview payload endpoint implemented per obituary.
+	- Post template settings are now centralized and configurable.
+	- Live template settings API + admin UI panel added (load/save without code edits).
+
+Current running capabilities:
+- Admin can move obituaries through: `new -> staged -> scheduled -> posted -> archived` (+ rollback paths).
+- Admin can preview staged Facebook post format before scheduling.
+- Admin can tune preview template fields (page name/prefix/date format/separator/comment prefix/emoji).
+- App displays recent transition history for operational traceability.
+
+Remaining work plan (Phase 4 -> Phase 6):
+
+Phase 4 (next):
+1) Mock publisher execution path
+	- Add a scheduled worker service that selects due `scheduled` rows and creates mock publish records.
+	- Persist mock `facebook_post_id` + `comment_url` + response metadata.
+2) Posting controls
+	- Add UI action `Publish now` for scheduled rows (mock mode).
+	- Add retry action for failed publish attempts.
+3) Live-mode scaffolding
+	- Add provider adapter interface (`mock` vs `live`).
+	- Keep `live` behind env flag and credentials checks.
+
+Phase 5:
+1) Archive automation
+	- Auto-archive policy for posted records after configurable interval.
+2) Archive search/reporting
+	- Add filters for archive by name/date/source/status.
+3) Metrics panel
+	- Add counts for new/staged/scheduled/posted/failed and daily throughput.
+
+Phase 6:
+1) Linux automation assets
+	- Add `scripts/run_daily_pipeline.sh`.
+	- Add `deploy/systemd/obits-pipeline.service` and `.timer`.
+2) Operational logging/alerts
+	- Structured logs + optional webhook on red source health or pipeline failure.
+3) Deployment runbook
+	- Document environment variables, install steps, and validation commands.
+
+Recommended immediate next build slice:
+- Implement Phase 4 mock publisher worker + `Publish now` API/action first, then wire posted metadata in UI.
+

@@ -335,7 +335,7 @@
     },
     "foss": {
       "name": "Foss Funeral Home",
-      "url": "https://www.fossfuneralhome.com",
+      "url": "https://www.fossfuneralhome.com/obits",
       "address": "Unknown",
       "scraper_type": "generic",
       "script": "scrape_generic_obituaries.py",
@@ -370,20 +370,20 @@
         "javascript:"
       ]
     },
-    "robertson": {
-      "name": "Robertson Funeral Home",
-      "url": "https://www.robertsonfh.com/listings",
+    "bellmead": {
+      "name": "Bellmead Funeral Home",
+      "url": "https://www.bellmeadfuneral.com/obituaries",
       "address": "Unknown",
-      "scraper_type": "listings",
+      "scraper_type": "generic",
       "script": "scrape_generic_obituaries.py",
-      "storage_file": "obituaries_robertson.json",
+      "storage_file": "obituaries_bellmead.json",
       "active": true,
       "last_scraped": "2025-07-25T23:46:08.177271",
       "priority": 10,
       "custom_selectors": {
-        "obituary_list": ".obit-listing, .obituary-item, .listing-item",
-        "obituary_link": "a[href*='/obituary/']",
-        "name_selector": "h1, .deceased-name, .obit-name, .tribute-name, .name",
+        "obituary_list": ".obit-listing, .obituary-item, .listing-item, .memorial-item",
+        "obituary_link": "a[href*='/obituary/'], a[href*='/obituaries/'], a[href*='/memorial/'], a[href*='/tribute/']",
+        "name_selector": "h1, .deceased-name, .obit-name, .tribute-name, .name, .memorial-name",
         "date_container": ".dates, .life-dates, .obit-dates, .birth-death, .lifespan",
         "birth_date": ".birth-date, .born, .date-birth, span.dob",
         "death_date": ".death-date, .died, .date-death, .passed, span.dod",
@@ -401,10 +401,9 @@
       ],
       "skip_patterns": [
         "/send-flowers",
-        "send-flowers",
-        "tributearchive.com",
-        "/listings",
-        "?action=",
+        "/plant-tree",
+        "/guestbook",
+        "/directions",
         "mailto:",
         "#",
         "javascript:",

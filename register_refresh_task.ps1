@@ -1,12 +1,12 @@
 param(
     [string]$TaskName = 'ObitScraper-RefreshAndPush',
-    [string]$Time = '07:00'
+    [string]$Time = '17:00'
 )
 
 $ErrorActionPreference = 'Stop'
 
 if ($Time -notmatch '^(?:[01]\d|2[0-3]):[0-5]\d$') {
-    Write-Host 'ERROR: -Time must be 24-hour format HH:mm (example: 07:00).' -ForegroundColor Red
+    Write-Host 'ERROR: -Time must be 24-hour format HH:mm (example: 17:00).' -ForegroundColor Red
     exit 1
 }
 

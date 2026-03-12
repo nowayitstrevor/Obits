@@ -16,8 +16,6 @@
         </div>
     </div>
 
-    <div class="max-w-[1500px] mx-auto px-4 sm:px-6">
-
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8 mt-6">
         <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 text-center flex flex-col justify-center">
             <div class="text-4xl font-bold text-blue-600 mb-2" id="total-obituaries">0</div>
@@ -44,30 +42,16 @@
 
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-8">
         <h3 class="text-xl font-bold text-slate-800 mb-4">Workflow Queue</h3>
-        <div class="flex flex-wrap justify-center gap-2 mb-4 border-b border-gray-100 pb-4" id="workflow-tabs"></div>
+        <div class="flex flex-wrap gap-2 mb-4 border-b border-gray-100 pb-4" id="workflow-tabs"></div>
         <div id="queue-status-note" class="text-sm text-slate-500 mt-2 block">Loading queue…</div>
-        <div class="flex flex-wrap items-center gap-2 mt-3">
-            <button id="queue-filter-errors-btn" class="text-sm font-medium border border-gray-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-blue-600 py-1.5 px-3 rounded-lg transition-colors" type="button">Failures Only: Off</button>
-            <span id="queue-failure-count" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200">Failures in tab: 0</span>
-        </div>
         <div id="queue-bulk-actions" class="flex flex-wrap gap-2 mt-4 items-center" style="display:none; margin-bottom:8px;">
             <label class="text-sm text-slate-500 mt-2 block" for="archive-old-days" style="margin:0;">Archive from New older than (days):</label>
             <input id="archive-old-days" class="border border-gray-300 rounded-lg py-1.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" type="number" min="1" value="30" style="max-width:110px;">
             <button id="archive-old-btn" class="text-sm font-medium border border-gray-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-blue-600 py-1.5 px-3 rounded-lg transition-colors" type="button">Archive Old from New</button>
         </div>
-        <div class="flex flex-col items-center gap-5 mt-6" id="queue-grid">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6" id="queue-grid">
             <div style="background:white;border-radius:10px;padding:16px;">Loading queue items...</div>
         </div>
-    </div>
-
-    <div class="mb-8 flex items-center justify-center">
-        <button id="toggle-admin-settings-btn" class="text-sm font-semibold border border-gray-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-blue-600 py-2 px-4 rounded-lg transition-colors shadow-sm" type="button" aria-expanded="false">Open Admin Settings</button>
-    </div>
-
-    <div id="admin-settings-panel" class="hidden mb-8">
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-4 flex items-center justify-between gap-3">
-        <h3 class="text-lg font-bold text-slate-800">Admin Settings</h3>
-        <button id="close-admin-settings-btn" class="text-sm font-medium border border-gray-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-blue-600 py-1.5 px-3 rounded-lg transition-colors" type="button">Close</button>
     </div>
 
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-8">
@@ -123,21 +107,16 @@
 
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-8">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-            <h3 id="publish-worker-title" class="text-xl font-bold text-slate-800">Publish Worker</h3>
+            <h3 class="text-xl font-bold text-slate-800">Publish Worker (Mock Facebook)</h3>
             <div style="display:flex; gap:8px;">
                 <button id="publish-refresh-btn" class="text-sm font-medium border border-gray-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-blue-600 py-1.5 px-3 rounded-lg transition-colors" type="button">Refresh</button>
                 <button id="publish-run-due-btn" class="text-sm font-medium border border-gray-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-blue-600 py-1.5 px-3 rounded-lg transition-colors" type="button">Run Due Posts</button>
             </div>
         </div>
         <div id="publish-note" class="text-sm text-slate-500 mt-2 block">Loading publish worker status…</div>
-        <div id="publish-preflight-note" class="text-sm text-slate-500 mt-2 block">Loading publish preflight…</div>
-        <ul id="publish-preflight-summary" class="mt-4 border border-gray-100 rounded-lg overflow-hidden divide-y divide-gray-100">
-            <li class="p-4 text-center text-sm text-slate-500">Checking publish preflight…</li>
-        </ul>
         <ul id="publish-summary" class="mt-4 border border-gray-100 rounded-lg overflow-hidden divide-y divide-gray-100">
             <li class="p-4 text-center text-sm text-slate-500">No publish runs yet.</li>
         </ul>
-    </div>
     </div>
 
     <div id="scrape-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity" role="dialog" aria-modal="true" aria-labelledby="scrape-modal-title">
@@ -163,25 +142,18 @@
     <script>
         const QUEUE_STATUSES = ['new', 'staged', 'scheduled', 'posted', 'archived'];
         const QUEUE_LABELS = {
-            new: 'Recent',
-            staged: 'Staged',
-            scheduled: 'Scheduled',
+            new: 'New Feed',
+            staged: 'Staging',
+            scheduled: 'Scheduling',
             posted: 'Posted',
-            archived: 'Archived'
+            archived: 'Archive'
         };
 
         let allObituaries = [];
         let queueItems = [];
         let queueCounts = { new: 0, staged: 0, scheduled: 0, posted: 0, archived: 0 };
         let activeQueueTab = 'new';
-        let queueFailureOnly = false;
         let scrapePollHandle = null;
-        let publishPreflightPayload = null;
-        let publishRunDueBusy = false;
-        let publishProgressById = {};
-        let publishProgressTimers = {};
-        let publishProgressClearTimers = {};
-        let adminSettingsVisible = false;
 
         const templateElements = {
             pageName: () => document.getElementById('template-page-name'),
@@ -197,7 +169,7 @@
             if (!value) return '--';
             const date = new Date(value);
             if (Number.isNaN(date.getTime())) return '--';
-            return date.toLocaleString();
+            return date.toLocaleDateString();
         }
 
         function escapeHtml(value) {
@@ -215,49 +187,6 @@
             const date = new Date(value);
             if (Number.isNaN(date.getTime())) return '--';
             return date.toLocaleString();
-        }
-
-        function parseSortableDate(value) {
-            if (!value) {
-                return Number.NaN;
-            }
-            const parsed = new Date(value);
-            return Number.isNaN(parsed.getTime()) ? Number.NaN : parsed.getTime();
-        }
-
-        function getQueueSortTime(item) {
-            if (!item || typeof item !== 'object') {
-                return Number.POSITIVE_INFINITY;
-            }
-
-            const candidates = [
-                item.queue_updated_at,
-                item.scraped_at,
-                item.effective_death_date,
-                item.death_date,
-            ];
-
-            for (const candidate of candidates) {
-                const timestamp = parseSortableDate(candidate);
-                if (!Number.isNaN(timestamp)) {
-                    return timestamp;
-                }
-            }
-
-            return Number.POSITIVE_INFINITY;
-        }
-
-        function sortQueueItems(status, items) {
-            if (!Array.isArray(items)) {
-                return [];
-            }
-
-            const copy = [...items];
-            if (status === 'new') {
-                // Recent tab should lead with newest scraped/updated records.
-                copy.sort((a, b) => getQueueSortTime(b) - getQueueSortTime(a));
-            }
-            return copy;
         }
 
         function queueEndpoint(status) {
@@ -278,431 +207,6 @@
 
         function updatePublishNote(message) {
             document.getElementById('publish-note').textContent = message;
-        }
-
-        function updatePublishPreflightNote(message) {
-            document.getElementById('publish-preflight-note').textContent = message;
-        }
-
-        function setAdminSettingsVisibility(visible) {
-            adminSettingsVisible = Boolean(visible);
-            const panel = document.getElementById('admin-settings-panel');
-            const toggleButton = document.getElementById('toggle-admin-settings-btn');
-            if (!panel || !toggleButton) {
-                return;
-            }
-
-            panel.classList.toggle('hidden', !adminSettingsVisible);
-            toggleButton.textContent = adminSettingsVisible ? 'Hide Admin Settings' : 'Open Admin Settings';
-            toggleButton.setAttribute('aria-expanded', adminSettingsVisible ? 'true' : 'false');
-        }
-
-        function toggleAdminSettingsVisibility() {
-            setAdminSettingsVisibility(!adminSettingsVisible);
-        }
-
-        function setQueueFailureFilterState() {
-            const button = document.getElementById('queue-filter-errors-btn');
-            if (!button) {
-                return;
-            }
-            button.textContent = `Failures Only: ${queueFailureOnly ? 'On' : 'Off'}`;
-            button.classList.toggle('bg-red-50', queueFailureOnly);
-            button.classList.toggle('text-red-700', queueFailureOnly);
-            button.classList.toggle('border-red-200', queueFailureOnly);
-        }
-
-        function getVisibleQueueItems() {
-            if (!queueFailureOnly) {
-                return queueItems;
-            }
-            return queueItems.filter(item => String(item.last_error || '').trim().length > 0);
-        }
-
-        function clampProgressPercent(value) {
-            const numeric = Number(value);
-            if (!Number.isFinite(numeric)) {
-                return 0;
-            }
-            return Math.max(0, Math.min(100, Math.round(numeric)));
-        }
-
-        function getPublishProgressState(obituaryId) {
-            const key = String(obituaryId || '').trim();
-            if (!key) {
-                return null;
-            }
-            return publishProgressById[key] || null;
-        }
-
-        function isPublishInProgress(obituaryId) {
-            const state = getPublishProgressState(obituaryId);
-            return Boolean(state && state.state === 'active');
-        }
-
-        function stopPublishProgressTicker(obituaryId) {
-            const key = String(obituaryId || '').trim();
-            if (!key) {
-                return;
-            }
-            const handle = publishProgressTimers[key];
-            if (handle) {
-                window.clearInterval(handle);
-                delete publishProgressTimers[key];
-            }
-        }
-
-        function cancelPublishProgressClear(obituaryId) {
-            const key = String(obituaryId || '').trim();
-            if (!key) {
-                return;
-            }
-            const handle = publishProgressClearTimers[key];
-            if (handle) {
-                window.clearTimeout(handle);
-                delete publishProgressClearTimers[key];
-            }
-        }
-
-        function updatePublishProgressUi(obituaryId) {
-            const key = String(obituaryId || '').trim();
-            if (!key) {
-                return;
-            }
-
-            const state = getPublishProgressState(key);
-            const wrap = findRowInput('data-publish-progress', key);
-            if (!wrap) {
-                return;
-            }
-
-            if (!state) {
-                wrap.classList.add('hidden');
-                return;
-            }
-
-            wrap.classList.remove('hidden');
-            const labelEl = findRowInput('data-publish-progress-label', key);
-            const valueEl = findRowInput('data-publish-progress-value', key);
-            const fillEl = findRowInput('data-publish-progress-fill', key);
-            const percent = clampProgressPercent(state.percent);
-            const toneClass = state.state === 'error'
-                ? 'bg-red-500'
-                : state.state === 'done'
-                    ? 'bg-emerald-500'
-                    : 'bg-blue-600';
-
-            if (labelEl) {
-                labelEl.textContent = state.label || 'Publishing obituary…';
-            }
-            if (valueEl) {
-                valueEl.textContent = `${percent}%`;
-            }
-            if (fillEl) {
-                fillEl.style.width = `${percent}%`;
-                fillEl.classList.remove('bg-blue-600', 'bg-emerald-500', 'bg-red-500', 'animate-pulse');
-                fillEl.classList.add(toneClass);
-                if (state.state === 'active') {
-                    fillEl.classList.add('animate-pulse');
-                }
-            }
-        }
-
-        function setPublishProgressState(obituaryId, patch) {
-            const key = String(obituaryId || '').trim();
-            if (!key) {
-                return;
-            }
-
-            const current = publishProgressById[key] || {
-                percent: 0,
-                label: 'Preparing publish request…',
-                state: 'active',
-            };
-            const nextPercent = patch && Object.prototype.hasOwnProperty.call(patch, 'percent')
-                ? patch.percent
-                : current.percent;
-
-            publishProgressById[key] = {
-                ...current,
-                ...(patch || {}),
-                percent: clampProgressPercent(nextPercent),
-            };
-
-            updatePublishProgressUi(key);
-            applyPublishActionGate();
-        }
-
-        function clearPublishProgressState(obituaryId) {
-            const key = String(obituaryId || '').trim();
-            if (!key) {
-                return;
-            }
-            stopPublishProgressTicker(key);
-            cancelPublishProgressClear(key);
-            delete publishProgressById[key];
-            updatePublishProgressUi(key);
-            applyPublishActionGate();
-        }
-
-        function schedulePublishProgressClear(obituaryId, delayMs) {
-            const key = String(obituaryId || '').trim();
-            if (!key) {
-                return;
-            }
-            cancelPublishProgressClear(key);
-            publishProgressClearTimers[key] = window.setTimeout(() => {
-                const state = getPublishProgressState(key);
-                if (state && state.state !== 'active') {
-                    clearPublishProgressState(key);
-                }
-            }, delayMs);
-        }
-
-        function startPublishProgressTicker(obituaryId) {
-            const key = String(obituaryId || '').trim();
-            if (!key) {
-                return;
-            }
-
-            stopPublishProgressTicker(key);
-            publishProgressTimers[key] = window.setInterval(() => {
-                const state = getPublishProgressState(key);
-                if (!state || state.state !== 'active') {
-                    stopPublishProgressTicker(key);
-                    return;
-                }
-
-                const currentPercent = clampProgressPercent(state.percent);
-                if (currentPercent >= 92) {
-                    return;
-                }
-
-                const increment = currentPercent < 40 ? 7 : currentPercent < 75 ? 4 : 2;
-                const nextPercent = Math.min(92, currentPercent + increment);
-                let label = 'Publishing obituary…';
-                if (nextPercent < 25) {
-                    label = 'Checking publish preflight…';
-                } else if (nextPercent >= 75) {
-                    label = 'Waiting for publish provider…';
-                }
-
-                setPublishProgressState(key, {
-                    percent: nextPercent,
-                    label,
-                });
-            }, 450);
-        }
-
-        function beginPublishProgress(obituaryId) {
-            const key = String(obituaryId || '').trim();
-            if (!key) {
-                return;
-            }
-            cancelPublishProgressClear(key);
-            setPublishProgressState(key, {
-                state: 'active',
-                percent: 8,
-                label: 'Checking publish preflight…',
-            });
-            startPublishProgressTicker(key);
-        }
-
-        function finishPublishProgress(obituaryId, options = {}) {
-            const key = String(obituaryId || '').trim();
-            if (!key) {
-                return;
-            }
-
-            const state = options.state === 'error' ? 'error' : 'done';
-            const label = String(options.label || (state === 'error' ? 'Publish failed.' : 'Publish complete.'));
-            const clearDelayMs = Number.isFinite(options.clearDelayMs)
-                ? Number(options.clearDelayMs)
-                : state === 'error'
-                    ? 5000
-                    : 2200;
-
-            stopPublishProgressTicker(key);
-            setPublishProgressState(key, {
-                state,
-                percent: 100,
-                label,
-            });
-            schedulePublishProgressClear(key, clearDelayMs);
-        }
-
-        function getPublishGateState() {
-            if (!publishPreflightPayload || typeof publishPreflightPayload !== 'object') {
-                return {
-                    blocked: true,
-                    reason: 'Publish preflight is unavailable. Refresh and resolve checks before publishing.',
-                    warningCount: 0,
-                };
-            }
-
-            const checks = Array.isArray(publishPreflightPayload.checks) ? publishPreflightPayload.checks : [];
-            const blockingChecks = checks.filter(check => !check?.ok && String(check?.severity || 'error') !== 'warning');
-            const warningChecks = checks.filter(check => !check?.ok && String(check?.severity || 'error') === 'warning');
-
-            if (blockingChecks.length > 0) {
-                const firstReason = String(blockingChecks[0]?.detail || '').trim();
-                return {
-                    blocked: true,
-                    reason: firstReason || 'Blocking preflight checks failed.',
-                    warningCount: warningChecks.length,
-                };
-            }
-
-            return {
-                blocked: false,
-                reason: '',
-                warningCount: warningChecks.length,
-            };
-        }
-
-        function applyPublishActionGate() {
-            const gate = getPublishGateState();
-            const runDueButton = document.getElementById('publish-run-due-btn');
-            if (runDueButton) {
-                const runDueBlocked = publishRunDueBusy || gate.blocked;
-                runDueButton.disabled = runDueBlocked;
-                runDueButton.title = runDueBlocked && gate.reason ? gate.reason : '';
-                runDueButton.classList.toggle('opacity-60', runDueBlocked);
-                runDueButton.classList.toggle('cursor-not-allowed', runDueBlocked);
-            }
-
-            document.querySelectorAll('button[data-action="publish-now"]').forEach(button => {
-                const obituaryId = String(button.dataset.id || '').trim();
-                const publishing = obituaryId ? isPublishInProgress(obituaryId) : false;
-                const blocked = gate.blocked || publishing;
-                button.disabled = blocked;
-                button.title = publishing
-                    ? 'Publish already in progress for this obituary.'
-                    : gate.blocked && gate.reason
-                        ? gate.reason
-                        : '';
-                button.classList.toggle('opacity-60', blocked);
-                button.classList.toggle('cursor-not-allowed', blocked);
-                button.textContent = publishing ? 'Publishing…' : 'Publish now';
-            });
-        }
-
-        function renderPublishPreflight(payload) {
-            const list = document.getElementById('publish-preflight-summary');
-            if (!list) {
-                return;
-            }
-
-            if (!payload || typeof payload !== 'object') {
-                list.innerHTML = '<li class="p-4 text-sm text-red-500 text-center font-medium bg-red-50">Publish preflight unavailable.</li>';
-                updatePublishPreflightNote('Publish preflight unavailable. Refresh to retry.');
-                return;
-            }
-
-            const summary = payload.summary || {};
-            const passed = Number(summary.passed || 0);
-            const failed = Number(summary.failed || 0);
-            const warnings = Number(summary.warnings || 0);
-            const provider = String(payload.provider || 'unknown');
-            const strictMode = Boolean(payload.strictMode);
-            const checks = Array.isArray(payload.checks) ? payload.checks : [];
-            const issueRows = checks.filter(item => !item?.ok).slice(0, 4);
-
-            const statusMain = failed > 0 ? 'Preflight status: blocked' : 'Preflight status: ready';
-            const statusMeta = `Passed: ${passed} • Blocking: ${failed} • Warnings: ${warnings}`;
-            const modeMeta = `Provider: ${provider} • Two-step mode: ${strictMode ? 'strict' : 'fallback-enabled'}`;
-
-            let issuesHtml = '';
-            if (issueRows.length > 0) {
-                issuesHtml = issueRows.map(item => {
-                    const severity = String(item.severity || 'error') === 'warning' ? 'warning' : 'blocking';
-                    const styleClass = severity === 'warning'
-                        ? 'text-amber-900 bg-amber-50 border-amber-200'
-                        : 'text-red-900 bg-red-50 border-red-200';
-                    return `
-                        <li class="p-3 text-xs border-t ${styleClass}">
-                            <strong>${escapeHtml(severity === 'warning' ? 'Warning' : 'Blocking')}</strong>
-                            <span class="mx-1">•</span>
-                            ${escapeHtml(String(item.name || 'check'))}: ${escapeHtml(String(item.detail || 'No details provided.'))}
-                        </li>
-                    `;
-                }).join('');
-            } else {
-                issuesHtml = '<li class="p-3 text-xs border-t border-emerald-200 bg-emerald-50 text-emerald-900"><strong>Ready:</strong> No preflight issues detected.</li>';
-            }
-
-            list.innerHTML = `
-                <li class="flex flex-col sm:flex-row justify-between sm:items-center p-3 text-sm hover:bg-slate-50">
-                    <span class="font-medium text-slate-700">${escapeHtml(statusMain)}</span>
-                    <span class="text-slate-500 text-xs">${escapeHtml(statusMeta)}</span>
-                </li>
-                <li class="flex flex-col sm:flex-row justify-between sm:items-center p-3 text-sm hover:bg-slate-50">
-                    <span class="font-medium text-slate-700">Preflight mode</span>
-                    <span class="text-slate-500 text-xs">${escapeHtml(modeMeta)}</span>
-                </li>
-            ` + issuesHtml;
-
-            if (failed > 0) {
-                updatePublishPreflightNote(`Preflight blocked by ${failed} check(s). Resolve failures before publishing.`);
-            } else {
-                updatePublishPreflightNote(`Preflight ready. ${warnings} warning(s) present.`);
-            }
-        }
-
-        async function loadPublishPreflight(options = {}) {
-            const silent = Boolean(options.silent);
-            try {
-                if (!silent) {
-                    updatePublishPreflightNote('Loading publish preflight…');
-                }
-                const response = await fetch('/api/db/publish/preflight');
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                const payload = await response.json();
-                publishPreflightPayload = payload;
-                renderPublishPreflight(payload);
-                applyPublishActionGate();
-                return payload;
-            } catch (error) {
-                console.error('Failed to load publish preflight:', error);
-                publishPreflightPayload = null;
-                renderPublishPreflight(null);
-                applyPublishActionGate();
-                return null;
-            }
-        }
-
-        function collectPublishWarningsFromResults(results) {
-            if (!Array.isArray(results)) {
-                return [];
-            }
-
-            return results.map(result => {
-                if (!result || typeof result !== 'object') {
-                    return null;
-                }
-                const publish = result.publish;
-                if (!publish || typeof publish !== 'object') {
-                    return null;
-                }
-                const providerResponse = publish.providerResponse;
-                if (!providerResponse || typeof providerResponse !== 'object') {
-                    return null;
-                }
-
-                const fallbackApplied = Boolean(providerResponse.comment_fallback_applied);
-                const warningText = String(providerResponse.comment_warning || '').trim();
-                if (!fallbackApplied && !warningText) {
-                    return null;
-                }
-
-                return {
-                    obituaryId: String(result.obituaryId || '').trim(),
-                    fallbackApplied,
-                    warning: warningText || 'First comment was not posted due to permissions.',
-                };
-            }).filter(Boolean);
         }
 
         function setTemplateForm(settings) {
@@ -792,21 +296,10 @@
                 const action = formatTransition(item);
                 const actor = item.initiated_by || 'unknown';
                 const timestamp = formatDateTime(item.action_at);
-                const metadata = item && typeof item.metadata === 'object' ? item.metadata : {};
-                const fallbackApplied = Boolean(metadata.commentFallbackApplied);
-                const warningText = String(metadata.commentWarning || '').trim();
-                const hasWarning = fallbackApplied || Boolean(warningText);
-                const warningLabel = fallbackApplied
-                    ? 'Partial success: photo published, first comment fallback used.'
-                    : 'Publish warning.';
-                const warningDetails = warningText || 'First comment was not posted due to permissions.';
                 return `
-                    <li class="p-3 text-sm hover:bg-slate-50 align-middle">
-                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
-                            <span class="font-medium text-slate-700">${escapeHtml(name)} <span class="text-slate-400 mx-1">&bull;</span> <span class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded text-xs">${escapeHtml(action)}</span></span>
-                            <span class="text-slate-500 text-xs text-right">${escapeHtml(actor)} <span class="mx-1">&bull;</span> ${escapeHtml(timestamp)}</span>
-                        </div>
-                        ${hasWarning ? `<div class="mt-2 rounded-md border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs text-amber-900"><strong>${escapeHtml(warningLabel)}</strong> ${escapeHtml(warningDetails)}</div>` : ''}
+                    <li class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 p-3 text-sm hover:bg-slate-50 align-middle">
+                        <span class="font-medium text-slate-700">${escapeHtml(name)} <span class="text-slate-400 mx-1">&bull;</span> <span class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded text-xs">${escapeHtml(action)}</span></span>
+                        <span class="text-slate-500 text-xs text-right">${escapeHtml(actor)} <span class="mx-1">&bull;</span> ${escapeHtml(timestamp)}</span>
                     </li>
                 `;
             }).join('');
@@ -837,7 +330,7 @@
                 const count = Number(queueCounts[status] || 0);
                 const activeClass = status === activeQueueTab ? 'active' : '';
                 const activeStyles = status === activeQueueTab ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-blue-600 border border-blue-200 hover:bg-blue-50';
-return `<button class="workflow-tab px-4 py-2 rounded-full text-sm font-semibold transition-all ${activeClass} ${activeStyles}" data-status="${status}">${escapeHtml(QUEUE_LABELS[status] || status)} (${count})</button>`;
+return `<button class="px-4 py-2 rounded-full text-sm font-semibold transition-all ${activeStyles}" data-status="${status}">${escapeHtml(QUEUE_LABELS[status] || status)} (${count})</button>`;
             }).join('');
 
             container.querySelectorAll('.workflow-tab').forEach(button => {
@@ -857,55 +350,21 @@ return `<button class="workflow-tab px-4 py-2 rounded-full text-sm font-semibold
 
         function renderQueueCards() {
             const grid = document.getElementById('queue-grid');
-            const failureCount = queueItems.filter(item => String(item.last_error || '').trim().length > 0).length;
-            const failureCountEl = document.getElementById('queue-failure-count');
-            if (failureCountEl) {
-                failureCountEl.textContent = `Failures in tab: ${failureCount}`;
-            }
-
-            const visibleItems = getVisibleQueueItems();
-            if (!visibleItems.length) {
-                if (queueFailureOnly) {
-                    grid.innerHTML = '<div style="background:white;border-radius:10px;padding:16px;">No failed records in this queue status.</div>';
-                } else {
-                    grid.innerHTML = '<div style="background:white;border-radius:10px;padding:16px;">No records in this queue status.</div>';
-                }
-                applyPublishActionGate();
+            if (!queueItems.length) {
+                grid.innerHTML = '<div style="background:white;border-radius:10px;padding:16px;">No records in this queue status.</div>';
                 return;
             }
 
-            grid.innerHTML = visibleItems.map((item, index) => {
+            grid.innerHTML = queueItems.map((item, index) => {
                 const obituaryId = String(item.id || '').trim();
-                const effectiveName = item.effective_name || item.name || 'Unknown';
                 const name = item.name || 'Unknown';
                 const source = item.source_name || item.source_key || 'Unknown source';
-                const birthDate = item.effective_birth_date || item.birth_date || 'Unknown';
-                const deathDate = item.effective_death_date || item.death_date || 'Unknown';
+                const birthDate = item.birth_date || 'Unknown';
+                const deathDate = item.death_date || 'Unknown';
                 const age = item.age ? ` • Age ${item.age}` : '';
                 const summary = item.summary || 'No summary available.';
                 const photo = item.photo_url || '';
                 const obituaryUrl = item.obituary_url || '#';
-                const hasOverrides = Boolean(item.has_overrides);
-                const overrideName = item.override_name || '';
-                const overrideBirthDate = item.override_birth_date || '';
-                const overrideDeathDate = item.override_death_date || '';
-                const overrideReason = item.override_reason || '';
-                const overrideUpdatedAt = formatDateTime(item.override_updated_at);
-                const overrideUpdatedBy = item.override_updated_by || '--';
-                const lastError = String(item.last_error || '').trim();
-                const retryCount = Number(item.retry_count || 0);
-                const retryAt = item.retry_at ? formatDateTime(item.retry_at) : '--';
-                const canPublishFromTab = activeQueueTab === 'staged' || activeQueueTab === 'scheduled';
-                const publishProgress = getPublishProgressState(obituaryId);
-                const publishProgressPercent = publishProgress ? clampProgressPercent(publishProgress.percent) : 0;
-                const publishProgressLabel = publishProgress && publishProgress.label ? publishProgress.label : 'Publishing obituary…';
-                const publishProgressToneClass = publishProgress && publishProgress.state === 'error'
-                    ? 'bg-red-500'
-                    : publishProgress && publishProgress.state === 'done'
-                        ? 'bg-emerald-500'
-                        : 'bg-blue-600';
-                const publishProgressPulseClass = publishProgress && publishProgress.state === 'active' ? 'animate-pulse' : '';
-                const publishProgressVisibleClass = publishProgress ? '' : 'hidden';
 
                 const imgHtml = photo
                     ? `<div class="h-48 w-full bg-slate-100 overflow-hidden"><img src="${escapeHtml(photo)}" alt="${escapeHtml(name)}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none'"></div>`
@@ -916,9 +375,7 @@ return `<button class="workflow-tab px-4 py-2 rounded-full text-sm font-semibold
                     actions = `<button class="text-sm font-medium border border-gray-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-blue-600 py-1.5 px-3 rounded-lg transition-colors" data-action="to-staged" data-id="${escapeHtml(obituaryId)}">Stage</button>`;
                 } else if (activeQueueTab === 'staged') {
                     actions = `
-                        <button class="text-sm font-medium border border-gray-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-blue-600 py-1.5 px-3 rounded-lg transition-colors" data-action="save-overrides" data-id="${escapeHtml(obituaryId)}">Save Edits</button>
                         <input type="datetime-local" class="border border-gray-300 rounded-lg py-1.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" data-schedule-input="${escapeHtml(obituaryId)}" aria-label="Schedule time for ${escapeHtml(name)}">
-                        <button class="text-sm font-medium border border-gray-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-blue-600 py-1.5 px-3 rounded-lg transition-colors" data-action="publish-now" data-id="${escapeHtml(obituaryId)}">Publish now</button>
                         <button class="text-sm font-medium border border-gray-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-blue-600 py-1.5 px-3 rounded-lg transition-colors" data-action="toggle-preview" data-id="${escapeHtml(obituaryId)}">Post Preview</button>
                         <button class="text-sm font-medium border border-gray-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-blue-600 py-1.5 px-3 rounded-lg transition-colors" data-action="to-scheduled" data-id="${escapeHtml(obituaryId)}">Schedule</button>
                         <button class="text-sm font-medium border border-gray-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-blue-600 py-1.5 px-3 rounded-lg transition-colors" data-action="to-new" data-id="${escapeHtml(obituaryId)}">Move to New</button>
@@ -939,106 +396,18 @@ return `<button class="workflow-tab px-4 py-2 rounded-full text-sm font-semibold
                 }
 
                 return `
-                    <div class="obituary-card w-full max-w-4xl bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden flex flex-col" data-obituary-id="${escapeHtml(obituaryId)}" data-row-index="${index}">
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden flex flex-col" data-obituary-id="${escapeHtml(obituaryId)}" data-row-index="${index}">
                         ${imgHtml}
-                        <div class="px-5 pt-4 pb-2 flex-grow"><h3 class="text-lg font-bold text-slate-800 mb-1 leading-tight">${escapeHtml(effectiveName)}</h3>
+                        <div class="px-5 pt-4 pb-2 flex-grow"><h3 class="text-lg font-bold text-slate-800 mb-1 leading-tight">${escapeHtml(name)}</h3>
                         <div class="text-sm font-medium text-blue-600 mb-1">${escapeHtml(source)}</div>
-                        ${hasOverrides ? `<div class="inline-flex items-center text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5 mb-2">Edited</div>` : ''}
-                        ${lastError ? `<div class="inline-flex items-center text-[11px] font-semibold text-red-700 bg-red-50 border border-red-200 rounded-full px-2 py-0.5 mb-2">Publish Failure</div>` : ''}
                         <div class="text-xs text-slate-500 mb-3 flex items-center gap-1">Born: ${escapeHtml(birthDate)} • Died: ${escapeHtml(deathDate)}${escapeHtml(age)}</div>
                         <div class="text-sm text-slate-600 line-clamp-3 mb-2 leading-relaxed">${escapeHtml(summary)}</div>
-                        ${lastError ? `<div class="text-xs text-red-700 bg-red-50 border border-red-200 rounded p-2 mb-2">Last publish error: ${escapeHtml(lastError)}<div class="mt-1 text-[11px] text-red-800">Retry count: ${escapeHtml(String(retryCount))} • Retry after: ${escapeHtml(retryAt)}</div></div>` : ''}
-                        ${activeQueueTab === 'staged' ? `
-                            <div class="mt-3 border border-slate-200 rounded-lg p-3 bg-slate-50" data-override-editor="${escapeHtml(obituaryId)}">
-                                <div class="text-xs font-semibold text-slate-600 mb-2">Staged Edits</div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                    <label class="text-xs text-slate-600">Name
-                                        <input type="text" class="mt-1 border border-gray-300 rounded-lg py-1.5 px-2.5 text-sm w-full" data-override-name="${escapeHtml(obituaryId)}" value="${escapeHtml(overrideName)}" placeholder="Override name">
-                                    </label>
-                                    <label class="text-xs text-slate-600">Birth Date
-                                        <input type="text" class="mt-1 border border-gray-300 rounded-lg py-1.5 px-2.5 text-sm w-full" data-override-birth-date="${escapeHtml(obituaryId)}" value="${escapeHtml(overrideBirthDate)}" placeholder="YYYY-MM-DD or source format">
-                                    </label>
-                                    <label class="text-xs text-slate-600">Death Date
-                                        <input type="text" class="mt-1 border border-gray-300 rounded-lg py-1.5 px-2.5 text-sm w-full" data-override-death-date="${escapeHtml(obituaryId)}" value="${escapeHtml(overrideDeathDate)}" placeholder="YYYY-MM-DD or source format">
-                                    </label>
-                                    <label class="text-xs text-slate-600">Reason
-                                        <input type="text" class="mt-1 border border-gray-300 rounded-lg py-1.5 px-2.5 text-sm w-full" data-override-reason="${escapeHtml(obituaryId)}" value="${escapeHtml(overrideReason)}" placeholder="Why this correction was made">
-                                    </label>
-                                </div>
-                                <div class="text-[11px] text-slate-500 mt-2">Updated by: ${escapeHtml(overrideUpdatedBy)} • ${escapeHtml(overrideUpdatedAt)}</div>
-                            </div>
-                        ` : ''}
                         <a href="${escapeHtml(obituaryUrl)}" class="text-sm text-blue-600 font-medium hover:underline inline-flex items-center gap-1 mt-auto" target="_blank" rel="noopener noreferrer">View Full Obituary →</a>
                         <div class="flex flex-wrap gap-2 mt-4 items-center">${actions}</div>
-                        ${canPublishFromTab ? `
-                            <div class="${publishProgressVisibleClass} mt-3" data-publish-progress="${escapeHtml(obituaryId)}">
-                                <div class="flex items-center justify-between text-[11px] font-medium text-slate-600 mb-1">
-                                    <span data-publish-progress-label="${escapeHtml(obituaryId)}">${escapeHtml(publishProgressLabel)}</span>
-                                    <span data-publish-progress-value="${escapeHtml(obituaryId)}">${escapeHtml(String(publishProgressPercent))}%</span>
-                                </div>
-                                <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                                    <div class="h-full ${publishProgressToneClass} ${publishProgressPulseClass} transition-all duration-300 ease-out" data-publish-progress-fill="${escapeHtml(obituaryId)}" style="width:${publishProgressPercent}%;"></div>
-                                </div>
-                            </div>
-                        ` : ''}
                         ${activeQueueTab === 'staged' ? `<div class="p-5 border-t border-gray-100 bg-slate-50" data-preview-wrap style="display:none;"><div data-preview-content class="text-sm text-slate-500 mt-2 block">Loading preview…</div></div>` : ''}
-                        </div>
                     </div>
                 `;
             }).join('');
-            applyPublishActionGate();
-        }
-
-        function findRowInput(dataAttribute, obituaryId) {
-            return Array.from(document.querySelectorAll(`[${dataAttribute}]`)).find(
-                element => element.getAttribute(dataAttribute) === obituaryId
-            ) || null;
-        }
-
-        function readInputValue(dataAttribute, obituaryId) {
-            const input = findRowInput(dataAttribute, obituaryId);
-            if (!input) {
-                return '';
-            }
-            return String(input.value || '').trim();
-        }
-
-        async function saveOverrides(obituaryId) {
-            const overrideName = readInputValue('data-override-name', obituaryId);
-            const overrideBirthDate = readInputValue('data-override-birth-date', obituaryId);
-            const overrideDeathDate = readInputValue('data-override-death-date', obituaryId);
-            const overrideReason = readInputValue('data-override-reason', obituaryId);
-
-            updateQueueStatusNote('Saving staged edits…');
-            const response = await fetch(`/api/db/queue/${encodeURIComponent(obituaryId)}/overrides`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    overrideName,
-                    overrideBirthDate,
-                    overrideDeathDate,
-                    overrideReason,
-                    initiatedBy: 'website_preview_staged_edit',
-                })
-            });
-            const payload = await response.json();
-            if (!response.ok || payload.ok !== true) {
-                throw new Error(payload.error || `HTTP ${response.status}`);
-            }
-
-            if (payload.counts && typeof payload.counts === 'object') {
-                queueCounts = {
-                    ...queueCounts,
-                    ...payload.counts,
-                };
-            }
-
-            renderWorkflowTabs();
-            await loadQueueTab(activeQueueTab);
-            await loadTransitionHistory();
-            updateQueueStatusNote('Staged edits saved.');
         }
 
         function renderPostPreviewHtml(preview) {
@@ -1134,8 +503,7 @@ return `<button class="workflow-tab px-4 py-2 rounded-full text-sm font-semibold
                 }
 
                 const payload = await response.json();
-                const fetchedItems = Array.isArray(payload.obituaries) ? payload.obituaries : [];
-                queueItems = sortQueueItems(status, fetchedItems);
+                queueItems = Array.isArray(payload.obituaries) ? payload.obituaries : [];
                 updateQueueStatusNote(`${QUEUE_LABELS[status] || status}: ${queueItems.length} loaded`);
                 renderQueueCards();
             } catch (error) {
@@ -1231,36 +599,7 @@ return `<button class="workflow-tab px-4 py-2 rounded-full text-sm font-semibold
         }
 
         async function publishNow(obituaryId) {
-            if (isPublishInProgress(obituaryId)) {
-                updateQueueStatusNote('Publish already in progress for this obituary.');
-                return;
-            }
-
-            beginPublishProgress(obituaryId);
             try {
-                await loadPublishPreflight({ silent: true });
-                setPublishProgressState(obituaryId, {
-                    percent: 24,
-                    label: 'Preflight checks complete.',
-                });
-
-                const gate = getPublishGateState();
-                if (gate.blocked) {
-                    const reason = gate.reason || 'Blocking preflight checks failed.';
-                    finishPublishProgress(obituaryId, {
-                        state: 'error',
-                        label: `Blocked: ${reason}`,
-                        clearDelayMs: 5500,
-                    });
-                    updatePublishNote(`Publish blocked: ${reason}`);
-                    updateQueueStatusNote('Publish blocked by preflight checks.');
-                    return;
-                }
-
-                setPublishProgressState(obituaryId, {
-                    percent: 36,
-                    label: 'Submitting publish request…',
-                });
                 updateQueueStatusNote('Publishing obituary now…');
                 const response = await fetch(`/api/db/publish/now/${encodeURIComponent(obituaryId)}`, {
                     method: 'POST',
@@ -1276,11 +615,6 @@ return `<button class="workflow-tab px-4 py-2 rounded-full text-sm font-semibold
                     throw new Error(payload.error || `HTTP ${response.status}`);
                 }
 
-                setPublishProgressState(obituaryId, {
-                    percent: 92,
-                    label: 'Finalizing publish result…',
-                });
-
                 if (payload.counts && typeof payload.counts === 'object') {
                     queueCounts = {
                         ...queueCounts,
@@ -1292,41 +626,16 @@ return `<button class="workflow-tab px-4 py-2 rounded-full text-sm font-semibold
                 await loadQueueTab(activeQueueTab);
                 await loadTransitionHistory();
                 await loadPublishStatus();
-                const warnings = collectPublishWarningsFromResults([payload]);
-                const provider = payload.publish && payload.publish.provider ? String(payload.publish.provider) : 'unknown';
-                if (warnings.length > 0) {
-                    finishPublishProgress(obituaryId, {
-                        state: 'done',
-                        label: 'Published with warning.',
-                        clearDelayMs: 2600,
-                    });
-                    updateQueueStatusNote(`Publish completed with warning (${provider}): ${warnings[0].warning}`);
-                } else {
-                    finishPublishProgress(obituaryId, {
-                        state: 'done',
-                        label: 'Publish complete.',
-                        clearDelayMs: 2200,
-                    });
-                    updateQueueStatusNote(`Publish complete (${provider}).`);
-                }
+                updateQueueStatusNote('Publish complete (mock provider).');
             } catch (error) {
                 console.error('Publish now failed:', error);
-                finishPublishProgress(obituaryId, {
-                    state: 'error',
-                    label: `Publish failed: ${error.message || 'Unknown error'}`,
-                    clearDelayMs: 6000,
-                });
                 updateQueueStatusNote(`Publish failed: ${error.message || 'Unknown error'}`);
             }
         }
 
         function renderPublishStatus(payload) {
             const list = document.getElementById('publish-summary');
-            const title = document.getElementById('publish-worker-title');
             if (!payload || payload.ok !== true || !payload.status) {
-                if (title) {
-                    title.textContent = 'Publish Worker';
-                }
                 list.innerHTML = '<li class="p-4 text-sm text-red-500 text-center font-medium bg-red-50">Publish status unavailable.</li>';
                 return;
             }
@@ -1334,25 +643,11 @@ return `<button class="workflow-tab px-4 py-2 rounded-full text-sm font-semibold
             const status = payload.status || {};
             const state = String(status.state || 'unknown');
             const lastRun = status.lastRun || {};
-            const provider = String(status.provider || 'unknown');
-            const twoStepMode = String(status.twoStepMode || 'unknown');
-            const fallbackAllowed = Boolean(status.commentFallbackAllowed);
-            const warningCount = Number(lastRun.warningCount || 0);
-            const partialSuccess = Number(lastRun.partialSuccess || 0);
-            const warningRows = Array.isArray(lastRun.warnings) ? lastRun.warnings : [];
-
-            if (title) {
-                title.textContent = `Publish Worker (${provider})`;
-            }
 
             const lines = [
                 {
                     main: `Worker state: ${state}`,
                     meta: `Started: ${formatDateTime(status.startedAt)} • Finished: ${formatDateTime(status.finishedAt)}`
-                },
-                {
-                    main: `Provider mode: ${provider} • Two-step policy: ${twoStepMode}`,
-                    meta: `Fallback enabled: ${fallbackAllowed ? 'yes' : 'no'}`
                 },
                 {
                     main: `Processed: ${Number(status.processed || 0)} • Published: ${Number(status.published || 0)} • Failed: ${Number(status.failed || 0)}`,
@@ -1361,31 +656,15 @@ return `<button class="workflow-tab px-4 py-2 rounded-full text-sm font-semibold
                 {
                     main: `Last run totals: processed ${Number(lastRun.processed || 0)}, published ${Number(lastRun.published || 0)}, failed ${Number(lastRun.failed || 0)}`,
                     meta: `Last run finished: ${formatDateTime(lastRun.finishedAt)}`
-                },
-                {
-                    main: `Last run warnings: ${warningCount}`,
-                    meta: `Partial success count: ${partialSuccess}`
                 }
             ];
-
-            const warningCards = warningRows.slice(0, 3).map(row => {
-                const obitId = String(row.obituaryId || '').trim();
-                const message = String(row.warning || 'First comment was not posted due to permissions.').trim();
-                const fallbackLabel = row.commentFallbackApplied ? 'Partial success' : 'Warning';
-                const idSuffix = obitId ? ` • ${obitId}` : '';
-                return `
-                    <li class="p-3 text-xs border-t border-amber-200 bg-amber-50 text-amber-900">
-                        <strong>${escapeHtml(fallbackLabel)}</strong>${escapeHtml(idSuffix)}: ${escapeHtml(message)}
-                    </li>
-                `;
-            }).join('');
 
             list.innerHTML = lines.map(line => `
                 <li class="flex flex-col sm:flex-row justify-between sm:items-center p-3 text-sm hover:bg-slate-50">
                     <span class="font-medium text-slate-700">${escapeHtml(line.main)}</span>
                     <span class="text-slate-500 text-xs">${escapeHtml(line.meta)}</span>
                 </li>
-            `).join('') + warningCards;
+            `).join('');
         }
 
         async function loadPublishStatus() {
@@ -1405,24 +684,10 @@ return `<button class="workflow-tab px-4 py-2 rounded-full text-sm font-semibold
             }
         }
 
-        async function refreshPublishPanel() {
-            await Promise.all([
-                loadPublishStatus(),
-                loadPublishPreflight(),
-            ]);
-        }
-
         async function runDuePublishes() {
-            publishRunDueBusy = true;
-            applyPublishActionGate();
+            const runButton = document.getElementById('publish-run-due-btn');
+            runButton.disabled = true;
             try {
-                await loadPublishPreflight({ silent: true });
-                const gate = getPublishGateState();
-                if (gate.blocked) {
-                    updatePublishNote(`Run due blocked: ${gate.reason}`);
-                    return;
-                }
-
                 updatePublishNote('Running due scheduled posts…');
                 const response = await fetch('/api/db/publish/run-due', {
                     method: 'POST',
@@ -1450,17 +715,12 @@ return `<button class="workflow-tab px-4 py-2 rounded-full text-sm font-semibold
                 await loadQueueTab(activeQueueTab);
                 await loadTransitionHistory();
                 await loadPublishStatus();
-                const warnings = collectPublishWarningsFromResults(payload.results || []);
-                const warningText = warnings.length > 0
-                    ? ` Warnings: ${warnings.length} partial-success publish event(s).`
-                    : '';
-                updatePublishNote(`Due run complete. Processed ${payload.processed || 0}, published ${payload.published || 0}, failed ${payload.failed || 0}.${warningText}`);
+                updatePublishNote(`Due run complete. Processed ${payload.processed || 0}, published ${payload.published || 0}, failed ${payload.failed || 0}.`);
             } catch (error) {
                 console.error('Run due publishes failed:', error);
                 updatePublishNote(`Run due failed: ${error.message || 'Unknown error'}`);
             } finally {
-                publishRunDueBusy = false;
-                applyPublishActionGate();
+                runButton.disabled = false;
             }
         }
 
@@ -1686,15 +946,6 @@ return `<button class="workflow-tab px-4 py-2 rounded-full text-sm font-semibold
                 await togglePostPreview(card, obituaryId);
                 return;
             }
-            if (action === 'save-overrides') {
-                try {
-                    await saveOverrides(obituaryId);
-                } catch (error) {
-                    console.error('Saving staged edits failed:', error);
-                    updateQueueStatusNote(`Save edits failed: ${error.message || 'Unknown error'}`);
-                }
-                return;
-            }
             if (action === 'to-staged') {
                 await transitionQueue(obituaryId, 'staged');
                 return;
@@ -1712,7 +963,9 @@ return `<button class="workflow-tab px-4 py-2 rounded-full text-sm font-semibold
                 return;
             }
             if (action === 'to-scheduled') {
-                const input = findRowInput('data-schedule-input', obituaryId);
+                const input = Array.from(document.querySelectorAll('[data-schedule-input]')).find(
+                    element => element.getAttribute('data-schedule-input') === obituaryId
+                );
                 const localValue = input ? String(input.value || '').trim() : '';
                 if (!localValue) {
                     updateQueueStatusNote('Scheduling requires a date/time.');
@@ -1729,17 +982,10 @@ return `<button class="workflow-tab px-4 py-2 rounded-full text-sm font-semibold
 
         document.getElementById('update-scraper-btn').addEventListener('click', startScrapeUpdate);
         document.getElementById('archive-old-btn').addEventListener('click', archiveOldNewObits);
-        document.getElementById('toggle-admin-settings-btn').addEventListener('click', toggleAdminSettingsVisibility);
-        document.getElementById('close-admin-settings-btn').addEventListener('click', () => setAdminSettingsVisibility(false));
-        document.getElementById('queue-filter-errors-btn').addEventListener('click', () => {
-            queueFailureOnly = !queueFailureOnly;
-            setQueueFailureFilterState();
-            renderQueueCards();
-        });
         document.getElementById('history-refresh-btn').addEventListener('click', loadTransitionHistory);
         document.getElementById('template-refresh-btn').addEventListener('click', loadTemplateSettings);
         document.getElementById('template-save-btn').addEventListener('click', saveTemplateSettings);
-        document.getElementById('publish-refresh-btn').addEventListener('click', refreshPublishPanel);
+        document.getElementById('publish-refresh-btn').addEventListener('click', loadPublishStatus);
         document.getElementById('publish-run-due-btn').addEventListener('click', runDuePublishes);
         document.getElementById('close-scrape-modal').addEventListener('click', closeScrapeModal);
         document.getElementById('scrape-modal').addEventListener('click', (event) => {
@@ -1749,16 +995,13 @@ return `<button class="workflow-tab px-4 py-2 rounded-full text-sm font-semibold
         });
 
         renderWorkflowTabs();
-        setAdminSettingsVisibility(false);
-        setQueueFailureFilterState();
         updateBulkArchiveVisibility();
         loadData();
         loadActionRequired();
         loadQueueCounts().then(() => loadQueueTab(activeQueueTab));
         loadTransitionHistory();
         loadTemplateSettings();
-        applyPublishActionGate();
-        refreshPublishPanel();
+        loadPublishStatus();
         pollScrapeStatus();
     </script>
 </div>

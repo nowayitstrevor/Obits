@@ -1,3 +1,4 @@
+data/app.db
 # Python
 __pycache__/
 *.py[cod]
@@ -26,3 +27,11 @@ development/html_debug/
 
 # Local automation logs
 logs/
+
+# Local SQLite app database
+data/*.db
+
+# Local environment secrets
+.env
+.env.*
+facebook secrets

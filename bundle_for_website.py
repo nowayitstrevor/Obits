@@ -10,7 +10,7 @@ from typing import List, Dict, Any
 
 SELECTED_SCRAPE_OUTPUT = 'obituaries_selected_pages.json'
 LOOKBACK_DAYS = 14
-EXCLUDED_FUNERAL_HOMES = {"Foss Funeral Home"}
+EXCLUDED_FUNERAL_HOMES = set()
 NOISY_URL_MARKERS = (
     "/send-flowers",
     "/sympathy",
@@ -81,7 +81,7 @@ def load_existing_obituaries() -> Dict[str, List[Dict]]:
     working_homes = {
         "Foss Funeral Home": "obituaries_fossfuneralhome.json",
         "McDowell Funeral Home": "obituaries_mcdowellfuneralhome.json", 
-        "Robertson Funeral Home": "obituaries_robertsonfh.json",
+        "Bellmead Funeral Home": "obituaries_bellmead.json",
         "SLC Texas Funeral Services": "obituaries_slctx.json"
     }
     

@@ -1,0 +1,4 @@
+
+
+Run sraper
+Set-Location "c:\Users\Noway\OneDrive\Documents\Obit Scraper"; schtasks /Run /TN "ObitScraper-RefreshAndPush"

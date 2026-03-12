@@ -22,6 +22,8 @@ except Exception:
 REQUEST_TIMEOUT_SECONDS = 30
 MAX_OBITUARIES_PER_SOURCE = 40
 DEFAULT_LOOKBACK_DAYS = 0
+DEFAULT_STOP_ON_SEEN = True
+DEFAULT_SEEN_STOP_STREAK = 1
 CONFIG_PATH = Path(__file__).resolve().parent / "funeral_homes_config.json"
 OUTPUT_PATH = Path(__file__).resolve().parent / "obituaries_selected_pages.json"
 
@@ -316,6 +318,123 @@ def fetch_with_fallback(url: str, timeout: int = REQUEST_TIMEOUT_SECONDS, prefer
     return response
 
 
+def normalize_obituary_url(url: str) -> str:
+    candidate = (url or "").strip()
+    if not candidate:
+        return ""
+
+    parsed = urlparse(candidate)
+    if not parsed.scheme or not parsed.netloc:
+        return candidate.lower().rstrip("/")
+
+    normalized_path = parsed.path or "/"
+    normalized_path = re.sub(r"/+", "/", normalized_path)
+    normalized_path = normalized_path.rstrip("/") or "/"
+    return f"{parsed.scheme.lower()}://{parsed.netloc.lower()}{normalized_path}"
+
+
+def load_seen_obituary_urls_by_source(output_path: Path) -> dict[str, set[str]]:
+    if not output_path.exists():
+        return {}
+
+    try:
+        payload = json.loads(output_path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+    raw_obituaries = payload.get("obituaries")
+    if not isinstance(raw_obituaries, list):
+        return {}
+
+    seen_by_source: dict[str, set[str]] = {}
+    for item in raw_obituaries:
+        if not isinstance(item, dict):
+            continue
+
+        source_key = str(item.get("sourceKey") or "").strip()
+        obituary_url = normalize_obituary_url(str(item.get("obituaryUrl") or "").strip())
+        if not source_key or not obituary_url:
+            continue
+
+        seen_by_source.setdefault(source_key, set()).add(obituary_url)
+
+    return seen_by_source
+
+
+def load_previous_records_by_source(output_path: Path) -> dict[str, list[ObituaryRecord]]:
+    if not output_path.exists():
+        return {}
+
+    try:
+        payload = json.loads(output_path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+    raw_obituaries = payload.get("obituaries")
+    if not isinstance(raw_obituaries, list):
+        return {}
+
+    records_by_source: dict[str, list[ObituaryRecord]] = {}
+    for item in raw_obituaries:
+        if not isinstance(item, dict):
+            continue
+
+        source_key = str(item.get("sourceKey") or "").strip()
+        obituary_id = str(item.get("id") or "").strip()
+        obituary_url = str(item.get("obituaryUrl") or "").strip()
+        if not source_key or not obituary_id or not obituary_url:
+            continue
+
+        age_value = item.get("age")
+        try:
+            parsed_age = int(age_value) if age_value is not None else None
+        except (TypeError, ValueError):
+            parsed_age = None
+
+        record = ObituaryRecord(
+            id=obituary_id,
+            sourceKey=source_key,
+            sourceName=str(item.get("sourceName") or source_key),
+            listingUrl=str(item.get("listingUrl") or ""),
+            obituaryUrl=obituary_url,
+            name=item.get("name"),
+            birthDate=item.get("birthDate"),
+            deathDate=item.get("deathDate"),
+            age=parsed_age,
+            summary=item.get("summary"),
+            photoUrl=item.get("photoUrl"),
+            scrapedAt=item.get("scrapedAt"),
+        )
+        records_by_source.setdefault(source_key, []).append(record)
+
+    return records_by_source
+
+
+def merge_records_prefer_new(new_records: list[ObituaryRecord], previous_records: list[ObituaryRecord]) -> list[ObituaryRecord]:
+    merged_by_url: dict[str, ObituaryRecord] = {}
+
+    for record in previous_records:
+        merge_key = normalize_obituary_url(record.obituaryUrl) or record.id.lower()
+        if merge_key and merge_key not in merged_by_url:
+            merged_by_url[merge_key] = record
+
+    for record in new_records:
+        merge_key = normalize_obituary_url(record.obituaryUrl) or record.id.lower()
+        if not merge_key:
+            continue
+        merged_by_url[merge_key] = record
+
+    deduped_by_id: list[ObituaryRecord] = []
+    seen_ids: set[str] = set()
+    for record in merged_by_url.values():
+        if record.id in seen_ids:
+            continue
+        seen_ids.add(record.id)
+        deduped_by_id.append(record)
+
+    return deduped_by_id
+
+
 def should_skip_link(url: str, skip_patterns: set[str]) -> bool:
     lowered = url.lower().strip()
     if not lowered:
@@ -506,21 +625,77 @@ def extract_dates(page_text: str) -> tuple[str | None, str | None]:
     return infer_birth_death_dates(page_text)
 
 
+def clean_extracted_name(value: str | None, source_name: str | None = None) -> str | None:
+    name = normalize_whitespace(value)
+    if not name:
+        return None
+
+    date_fragment = (
+        r"(?:January|February|March|April|May|June|July|August|September|October|November|December|"
+        r"Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?\s+\d{1,2},?\s+\d{4}"
+        r"|\d{1,2}[/-]\d{1,2}[/-]\d{4}"
+        r"|\d{4}-\d{1,2}-\d{1,2}"
+    )
+
+    name = re.sub(r"^(?:obituary\s+for|obituary\s+of|in\s+loving\s+memory\s+of)\s+", "", name, flags=re.I)
+    name = re.sub(r"\s*\|\s*\d{4}\s*-\s*\d{4}\s*\|\s*obituary\b.*$", "", name, flags=re.I)
+    name = re.sub(r"^obituary\s*\|\s*", "", name, flags=re.I)
+    name = re.sub(r"\s*\|\s*obituary\b.*$", "", name, flags=re.I)
+    name = re.sub(rf"\s+obituary\s+{date_fragment}\b.*$", "", name, flags=re.I)
+    name = re.sub(
+        r"\s*(?:\||[-–—])\s*[^|]*\b(funeral\s+home|funeral\s+services|memorial|mortuary|chapel|cremation|crematorium|cemetery)\b.*$",
+        "",
+        name,
+        flags=re.I,
+    )
+
+    normalized_source_name = normalize_whitespace(source_name)
+    if normalized_source_name:
+        name = re.sub(
+            rf"\s*(?:\||[-–—])\s*{re.escape(normalized_source_name)}\s*$",
+            "",
+            name,
+            flags=re.I,
+        )
+
+    name = re.sub(r"\s*(?:\||[-–—])\s*obituary\s*$", "", name, flags=re.I)
+    name = normalize_whitespace(name)
+    return name
+
+
+def clean_extracted_summary(value: str | None) -> str | None:
+    summary = normalize_whitespace(value)
+    if not summary:
+        return None
+
+    summary = re.sub(
+        r"\bshare this obituary\b.*?\bsend sympathy card\b\s*\|?\s*",
+        "",
+        summary,
+        flags=re.I,
+    )
+    summary = re.sub(r"\bupload photo\b\s*\|?\s*", "", summary, flags=re.I)
+    summary = re.sub(r"\bsign guestbook\b\s*\|?\s*", "", summary, flags=re.I)
+    summary = re.sub(r"\bview guestbook entries\b\s*\|?\s*", "", summary, flags=re.I)
+    summary = normalize_whitespace(summary)
+    return summary[:700] if summary else None
+
+
 def extract_summary(soup: BeautifulSoup, selectors: dict) -> str | None:
     configured = extract_first_text(soup, selectors.get("content_selector"))
     if configured and len(configured) >= 80:
-        return configured[:700]
+        return clean_extracted_summary(configured)
 
     paragraphs = [normalize_whitespace(p.get_text(" ", strip=True)) for p in soup.select("p")]
     for paragraph in paragraphs:
         if not paragraph:
             continue
         if 80 <= len(paragraph) <= 1200:
-            return paragraph[:700]
+            return clean_extracted_summary(paragraph)
 
     body = normalize_whitespace(soup.get_text(" ", strip=True))
     if body and len(body) >= 120:
-        return body[:700]
+        return clean_extracted_summary(body)
 
     return None
 
@@ -654,6 +829,7 @@ def build_obituary_record_from_soup(
     name = extract_first_text(soup, selectors.get("name_selector"))
     if not name:
         name = normalize_whitespace((soup.select_one("h1") or soup.select_one("title") or {}).get_text(" ", strip=True) if (soup.select_one("h1") or soup.select_one("title")) else None)
+    name = clean_extracted_name(name, source_name=source_name)
 
     birth_date = extract_first_text(soup, selectors.get("birth_date"))
     death_date = extract_first_text(soup, selectors.get("death_date"))
@@ -725,7 +901,14 @@ def scrape_obituary_page(
     return None
 
 
-def scrape_source(source_key: str, config: dict, max_obituaries: int) -> tuple[list[ObituaryRecord], SourceScrapeResult]:
+def scrape_source(
+    source_key: str,
+    config: dict,
+    max_obituaries: int,
+    known_obituary_urls: set[str] | None = None,
+    stop_on_seen: bool = DEFAULT_STOP_ON_SEEN,
+    seen_stop_streak: int = DEFAULT_SEEN_STOP_STREAK,
+) -> tuple[list[ObituaryRecord], SourceScrapeResult]:
     source_name = str(config.get("name") or source_key)
     listing_url = str(config.get("url") or "").strip()
     selectors = config.get("custom_selectors") or {}
@@ -780,9 +963,25 @@ def scrape_source(source_key: str, config: dict, max_obituaries: int) -> tuple[l
 
         obituary_urls = obituary_urls[:max_obituaries]
 
+        known_urls = known_obituary_urls or set()
+        required_seen_streak = max(1, int(seen_stop_streak))
+        urls_to_scrape: list[str] = []
+        seen_streak = 0
+
+        for obituary_url in obituary_urls:
+            normalized_obituary_url = normalize_obituary_url(obituary_url)
+            if stop_on_seen and known_urls and normalized_obituary_url in known_urls:
+                seen_streak += 1
+                if seen_streak >= required_seen_streak:
+                    break
+                continue
+
+            seen_streak = 0
+            urls_to_scrape.append(obituary_url)
+
         records: list[ObituaryRecord] = []
         seen_ids: set[str] = set()
-        for obituary_url in obituary_urls:
+        for obituary_url in urls_to_scrape:
             record = scrape_obituary_page(
                 obituary_url,
                 listing_url,
@@ -810,7 +1009,7 @@ def scrape_source(source_key: str, config: dict, max_obituaries: int) -> tuple[l
             sourceKey=source_key,
             status=status,
             listingUrl=listing_url,
-            pagesDiscovered=len(obituary_urls),
+            pagesDiscovered=len(urls_to_scrape),
             obituariesScraped=len(records),
             durationMs=duration,
             error=None,
@@ -871,6 +1070,8 @@ def collect_all_obituaries(
     source_keys: set[str] | None,
     max_obituaries: int,
     lookback_days: int,
+    stop_on_seen: bool,
+    seen_stop_streak: int,
 ) -> tuple[list[ObituaryRecord], list[SourceScrapeResult]]:
     records: list[ObituaryRecord] = []
     report: list[SourceScrapeResult] = []
@@ -879,10 +1080,28 @@ def collect_all_obituaries(
     if not sources:
         raise ValueError("No sources selected. Check --sources or funeral_homes_config.json active flags.")
 
+    previous_records_by_source = load_previous_records_by_source(OUTPUT_PATH) if stop_on_seen else {}
+    seen_urls_by_source = load_seen_obituary_urls_by_source(OUTPUT_PATH) if stop_on_seen else {}
+
     for source_key, config in sources.items():
-        source_records, source_result = scrape_source(source_key, config, max_obituaries=max_obituaries)
+        previous_source_records = previous_records_by_source.get(source_key, [])
+        known_obituary_urls = seen_urls_by_source.get(source_key, set())
+        source_records, source_result = scrape_source(
+            source_key,
+            config,
+            max_obituaries=max_obituaries,
+            known_obituary_urls=known_obituary_urls,
+            stop_on_seen=stop_on_seen,
+            seen_stop_streak=seen_stop_streak,
+        )
+
+        if stop_on_seen and previous_source_records:
+            source_records = merge_records_prefer_new(source_records, previous_source_records)
+
         source_records = filter_records_to_lookback(source_records, lookback_days=lookback_days)
         source_result.obituariesScraped = len(source_records)
+        if source_result.status == "no-data" and source_records:
+            source_result.status = "ok"
         if source_result.status == "ok" and not source_records:
             source_result.status = "no-data"
         records.extend(source_records)
@@ -934,6 +1153,25 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_LOOKBACK_DAYS,
         help=f"Keep only obituaries with death dates within the last N days (default: {DEFAULT_LOOKBACK_DAYS} = keep all)",
     )
+    parser.add_argument(
+        "--stop-on-seen",
+        dest="stop_on_seen",
+        action="store_true",
+        default=DEFAULT_STOP_ON_SEEN,
+        help="Stop scraping older obituary pages for a source once already-scraped obituary URLs are reached.",
+    )
+    parser.add_argument(
+        "--no-stop-on-seen",
+        dest="stop_on_seen",
+        action="store_false",
+        help="Disable stop-on-seen behavior and scrape up to --max-obituaries-per-source each run.",
+    )
+    parser.add_argument(
+        "--seen-stop-streak",
+        type=int,
+        default=DEFAULT_SEEN_STOP_STREAK,
+        help=f"Consecutive already-seen obituary URLs required before stopping a source (default: {DEFAULT_SEEN_STOP_STREAK}).",
+    )
     return parser.parse_args()
 
 
@@ -946,6 +1184,8 @@ def main() -> None:
         source_keys=source_keys,
         max_obituaries=max(1, int(args.max_obituaries_per_source)),
         lookback_days=max(0, int(args.lookback_days)),
+        stop_on_seen=bool(args.stop_on_seen),
+        seen_stop_streak=max(1, int(args.seen_stop_streak)),
     )
     write_output(records, source_results)
 

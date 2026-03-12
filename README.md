@@ -108,6 +108,12 @@ py scrape_selected_obituaries.py
 # optional: py scrape_selected_obituaries.py --sources foss,robertson,slctx
 ```
 
+### 1c. Ingest selected scrape output into local SQLite app DB
+```bash
+py ingest_selected_to_db.py
+# optional: py ingest_selected_to_db.py --input obituaries_selected_pages.json --db-path data/app.db
+```
+
 ### 2. Check Status
 ```bash
 py analyze_funeral_homes.py
@@ -124,6 +130,103 @@ py website_server.py
 # Visit: http://localhost:5000
 ```
 
+### 5. Query DB-backed Phase 1 endpoints
+```bash
+# Recent obituaries from SQLite feed
+http://localhost:5000/api/db/obituaries/recent
+
+# Full DB feed (up to 200)
+http://localhost:5000/api/db/obituaries
+
+# Per-source health summary (green/yellow/red)
+http://localhost:5000/api/db/source-health
+
+# Sources requiring scraper reprogramming/action
+http://localhost:5000/api/db/source-health/action-required
+```
+
+## Publish Worker And Sandbox Runbook
+
+### Register/start the publish worker task (Windows)
+```powershell
+# register or update startup task
+& .\register_publish_worker_task.ps1 -PollSeconds 300 -BatchLimit 25 -DeepPreflightIntervalSeconds 3600
+
+# start immediately
+schtasks /Run /TN "ObitScraper-PublishWorker"
+
+# verify task details
+schtasks /Query /TN "ObitScraper-PublishWorker" /V /FO LIST
+```
+
+### Check publish worker API status
+```powershell
+Invoke-WebRequest "http://localhost:5000/api/db/publish/status" -UseBasicParsing | Select-Object -ExpandProperty Content
+```
+
+### Check operational health and latest preflight telemetry
+```powershell
+Invoke-WebRequest "http://localhost:5000/api/db/ops/health" -UseBasicParsing | Select-Object -ExpandProperty Content
+Invoke-WebRequest "http://localhost:5000/api/db/publish/preflight/latest" -UseBasicParsing | Select-Object -ExpandProperty Content
+```
+
+### Schedule recurring health checks (Windows Task Scheduler)
+```powershell
+# run deep preflight + ops health every 30 minutes
+& .\register_publish_health_task.ps1 -IntervalMinutes 30 -Deep
+
+# run now
+schtasks /Run /TN "ObitScraper-PublishHealthCheck"
+```
+
+### Run publish preflight checks
+```powershell
+# lightweight preflight
+Invoke-WebRequest "http://localhost:5000/api/db/publish/preflight" -UseBasicParsing | Select-Object -ExpandProperty Content
+
+# deep preflight (creates unpublished probe post/comment and then cleans both up)
+Invoke-WebRequest "http://localhost:5000/api/db/publish/preflight?deep=true" -UseBasicParsing | Select-Object -ExpandProperty Content
+```
+
+### Facebook provider mode
+Set these in the server/worker environment before publishing:
+
+- `FB_PUBLISH_PROVIDER`:
+	- `mock` for local safe testing
+	- `facebook_sandbox` for Graph API sandbox posting
+- `FB_PAGE_ID` (required for `facebook_sandbox`)
+- `FB_PAGE_ACCESS_TOKEN` (required for `facebook_sandbox`)
+- `FB_SANDBOX_ALLOW_COMMENT_FALLBACK` (optional, default `false` for strict two-step publish)
+- `FB_GRAPH_API_VERSION` (optional, default `v20.0`)
+- `FB_GRAPH_API_BASE_URL` (optional override)
+- `FB_PUBLISH_TIMEOUT_SECONDS` (optional, default `20`)
+- `PUBLISH_PREFLIGHT_DEEP_INTERVAL_SECONDS` (optional, default `0`; enable periodic deep checks in worker loop)
+- `PUBLISH_WORKER_STALE_MULTIPLIER` (optional, default `3`)
+- `PUBLISH_WORKER_STALE_MIN_SECONDS` (optional, default `600`)
+
+Use environment variables only for credentials. Start from `.env.example` and keep `.env` local (ignored by git). The server and worker now load `.env` directly at startup (without overriding already exported environment values).
+
+If credentials were exposed, rotate immediately before any further publishing:
+- Rotate Meta app secret
+- Regenerate user token with `pages_manage_posts` + `pages_manage_engagement`
+- Regenerate page access token
+- Update local env vars and restart server/worker processes
+
+Detailed credential procedure: `SECRET_ROTATION_RUNBOOK.md`
+
+### Run direct sandbox smoke test (API-only)
+```powershell
+# auto-selects a staged/new record, schedules it, runs due publish, then prints counts/status
+& .\smoke_test_facebook_sandbox.ps1 -BaseUrl "http://localhost:5000" -ScheduleDelaySeconds 30
+
+# optional: target a specific obituary id
+& .\smoke_test_facebook_sandbox.ps1 -BaseUrl "http://localhost:5000" -ObituaryId "some-obituary-id" -ScheduleDelaySeconds 30
+```
+
+If provider is not `facebook_sandbox`, the smoke test exits by default to prevent accidental provider mismatch.
+The smoke test also fails when fallback is enabled, unless explicitly overridden with `-AllowCommentFallback`.
+The smoke test runs deep publish preflight checks by default; use `-SkipPreflight` to bypass.
+
 ## 🔧 Configuration
 
 The `funeral_homes_config.json` file contains all funeral home configurations:
@@ -133,11 +236,15 @@ The `funeral_homes_config.json` file contains all funeral home configurations:
 - **Custom Selectors**: Site-specific CSS selectors for data extraction
 - **Skip Patterns**: URLs to avoid during scraping
 
+Phase 2 freshness tuning:
+- `SOURCE_NO_NEW_RUNS_RED` (default `3`) marks a source as red/`needs_reprogramming=1` after N consecutive successful runs with no newly discovered obituaries.
+
 ## 📊 Data Files
 
 - `obituaries_[home].json` - Individual funeral home data
 - `website_obituaries.json` - Complete dataset with metadata
 - `obituaries_for_website.json` - Optimized for website integration
+- `data/app.db` - Local canonical SQLite store for feed, queue, and scrape status
 
 ## 🌐 Website Features
 

@@ -1,6 +1,7 @@
 param(
     [switch]$SkipScrape,
     [switch]$SkipBundle,
+    [switch]$SkipIngest,
     [int]$LookbackDaysForStorage = 0,
     [string]$CommitMessage = ""
 )
@@ -39,6 +40,20 @@ if (-not $SkipBundle) {
 }
 else {
     Write-Host "`nSkipping bundle step" -ForegroundColor Yellow
+}
+
+if (-not $SkipIngest) {
+    $selectedOutputPath = Join-Path $projectRoot 'obituaries_selected_pages.json'
+    if (Test-Path $selectedOutputPath) {
+        Write-Host "`nSyncing selected output into SQLite app DB..." -ForegroundColor Green
+        & $pythonExe 'ingest_selected_to_db.py'
+    }
+    else {
+        Write-Host "`nSkipping DB sync: obituaries_selected_pages.json was not found." -ForegroundColor Yellow
+    }
+}
+else {
+    Write-Host "`nSkipping DB sync step" -ForegroundColor Yellow
 }
 
 $dataFiles = @(

@@ -1,0 +1,42 @@
+# Prompt to Rebuild the Obit Scraper Frontend
+
+**Context:**
+We have a Python/Flask application called "Obit Scraper" (or Enhanced Obits Daily) that scrapes obituary data from various local funeral homes, catalogs it, and stages it to be posted to a news site/Facebook page.
+The current frontend uses vanilla HTML, CSS, and plain JavaScript to manage scraping operations, show statistics, search records, manage funeral homes, and view archived or pending obituaries.
+
+**Objective:**
+Rebuild the user interface to be incredibly simple, clean, and modern—drawing heavy inspiration from Facebook's layout and design system. 
+You must use **Tailwind CSS** for all styling.
+
+**Design Requirements:**
+1. **Facebook-like Structure & Spacing**:
+   - A distinct top navigation bar (Header) with subtle shadows containing the app title and primary actions.
+   - An off-white/light gray background (e.g., `bg-gray-100` or `bg-slate-50`).
+   - Group content into clean, distinct white cards (`bg-white`, `rounded-xl`, `shadow-sm`, `border border-gray-200`).
+   - Center the main feed (the obituaries) like a timeline, with intuitive spacing for search/filters above.
+   
+2. **Typography**:
+   - Use simple, highly readable fonts (e.g., `font-sans`, Inter, Roboto, or the system default sans-serif).
+   - High contrast text: use `text-slate-900` for primary headings/names, and `text-slate-500` for secondary text like dates, age, and funeral home names.
+
+3. **Smooth & Clean Animations**:
+   - Add gentle hover effects on cards and buttons (`transition-all duration-200 ease-in-out`).
+   - Smooth tab-switching transitions and modal popups.
+   - Use skeleton loaders (e.g., pulsing gray bars `animate-pulse`) when fetching data instead of basic spinners.
+
+4. **Modern Buttons & Controls**:
+   - Soft-rounded buttons (`rounded-lg` or `rounded-full`).
+   - Use a distinct Facebook-like blue (e.g., `bg-blue-600 hover:bg-blue-700`) for primary brand actions like "Scrape All" or "Publish".
+   - Include active click states (`active:scale-95`).
+   - Clean, minimal input fields with focus rings (`focus:ring-2 focus:ring-blue-500`) for search and forms.
+
+5. **Obituary Feed Layout**:
+   - Present each obituary like a social media post in a clean timeline/feed format.
+   - Position the photo elegantly (either inline left or top banner style) with the deceased's name prominently displayed.
+   - Clean data presentation for the dates and the summary line.
+   - Action controls (Publish, Archive, Review) should sit at the bottom of the card like Facebook post interactions (Like/Comment/Share structure) with distinct, clear icons or buttons.
+
+**Deliverables:**
+1. An updated or new HTML template powered exclusively by Tailwind CSS utility classes.
+2. Refactored structural components (Header, Tab Navigation, Search/Filter Bar, Obituary Feed/Cards, Management Modals).
+3. Any necessary minor JavaScript updates to handle UI animation states (tabs, modals, toast notifications) or skeleton loading transitions.
