@@ -7,12 +7,141 @@ import sqlite3
 from collections import defaultdict
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator, Mapping
+
+try:
+    import psycopg
+except Exception:  # pragma: no cover - optional at runtime
+    psycopg = None
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 DEFAULT_DB_PATH = DATA_DIR / "app.db"
 SELECTED_OUTPUT_PATH = BASE_DIR / "obituaries_selected_pages.json"
+
+
+class CompatRow(Mapping[str, Any]):
+    def __init__(self, columns: list[str], values: tuple[Any, ...]):
+        self._columns = list(columns)
+        self._values = tuple(values)
+        self._index = {name: idx for idx, name in enumerate(self._columns)}
+
+    def __getitem__(self, key: Any) -> Any:
+        if isinstance(key, int):
+            return self._values[key]
+        if key in self._index:
+            return self._values[self._index[str(key)]]
+        raise KeyError(key)
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._columns)
+
+    def __len__(self) -> int:
+        return len(self._columns)
+
+
+class PostgresCompatCursor:
+    _SEQUENCE_ID_TABLES = {
+        "queue_transition_audit",
+        "publish_preflight_runs",
+        "scrape_runs",
+        "scrape_source_status",
+    }
+
+    def __init__(self, raw_conn: Any, raw_cursor: Any, original_query: str):
+        self._raw_conn = raw_conn
+        self._raw_cursor = raw_cursor
+        self._original_query = str(original_query or "")
+        self.lastrowid = self._detect_lastrowid()
+
+    @property
+    def rowcount(self) -> int:
+        return int(getattr(self._raw_cursor, "rowcount", 0) or 0)
+
+    def fetchone(self) -> CompatRow | None:
+        row = self._raw_cursor.fetchone()
+        if row is None:
+            return None
+        columns = [str(item.name) for item in (self._raw_cursor.description or [])]
+        return CompatRow(columns, tuple(row))
+
+    def fetchall(self) -> list[CompatRow]:
+        rows = self._raw_cursor.fetchall()
+        if not rows:
+            return []
+        columns = [str(item.name) for item in (self._raw_cursor.description or [])]
+        return [CompatRow(columns, tuple(row)) for row in rows]
+
+    def _detect_lastrowid(self) -> int | None:
+        query = self._original_query.strip().lower()
+        if not query.startswith("insert into"):
+            return None
+        if "returning" in query:
+            return None
+
+        table_match = re.search(r"insert\s+into\s+([a-zA-Z_][a-zA-Z0-9_]*)", query)
+        if not table_match:
+            return None
+
+        table_name = table_match.group(1)
+        if table_name not in self._SEQUENCE_ID_TABLES:
+            return None
+
+        try:
+            with self._raw_conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT currval(pg_get_serial_sequence(%s, 'id'))
+                    """,
+                    (f"public.{table_name}",),
+                )
+                row = cur.fetchone()
+                if not row:
+                    return None
+                return int(row[0])
+        except Exception:
+            return None
+
+
+class PostgresCompatConnection:
+    def __init__(self, raw_conn: Any):
+        self._raw_conn = raw_conn
+
+    def __enter__(self) -> "PostgresCompatConnection":
+        return self
+
+    def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+        if exc is None:
+            self.commit()
+        else:
+            self.rollback()
+        self.close()
+
+    def _normalize_query(self, query: str) -> str:
+        return str(query or "").replace("?", "%s")
+
+    def execute(self, query: str, params: Any = None) -> PostgresCompatCursor:
+        normalized = self._normalize_query(query)
+        cursor = self._raw_conn.cursor()
+        if params is None:
+            cursor.execute(normalized)
+        else:
+            cursor.execute(normalized, params)
+        return PostgresCompatCursor(self._raw_conn, cursor, query)
+
+    def executescript(self, script: str) -> None:
+        statements = [part.strip() for part in str(script or "").split(";") if part.strip()]
+        for statement in statements:
+            self.execute(statement)
+
+    def commit(self) -> None:
+        self._raw_conn.commit()
+
+    def rollback(self) -> None:
+        self._raw_conn.rollback()
+
+    def close(self) -> None:
+        self._raw_conn.close()
 
 QUEUE_STATUSES = {"new", "staged", "scheduled", "posted", "archived"}
 ALLOWED_QUEUE_TRANSITIONS: dict[str, set[str]] = {
@@ -28,6 +157,11 @@ def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def get_db_provider() -> str:
+    provider = str(os.environ.get("DATABASE_PROVIDER", "sqlite") or "sqlite").strip().lower()
+    return provider or "sqlite"
+
+
 def get_db_path() -> Path:
     configured = os.environ.get("APP_DB_PATH")
     if configured:
@@ -35,7 +169,21 @@ def get_db_path() -> Path:
     return DEFAULT_DB_PATH
 
 
-def get_connection(db_path: Path | None = None) -> sqlite3.Connection:
+def get_connection(db_path: Path | None = None) -> Any:
+    provider = get_db_provider()
+    if provider == "postgres":
+        if psycopg is None:
+            raise RuntimeError(
+                "DATABASE_PROVIDER=postgres but psycopg is not installed. Run: py -m pip install -r requirements.txt"
+            )
+
+        pg_url = str(os.environ.get("DB_CONNECTION_STRING") or os.environ.get("DATABASE_URL") or "").strip()
+        if not pg_url:
+            raise RuntimeError("DATABASE_PROVIDER=postgres requires DB_CONNECTION_STRING or DATABASE_URL.")
+
+        raw_conn = psycopg.connect(pg_url)
+        return PostgresCompatConnection(raw_conn)
+
     path = db_path or get_db_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(path)
@@ -44,6 +192,9 @@ def get_connection(db_path: Path | None = None) -> sqlite3.Connection:
 
 
 def ensure_schema(conn: sqlite3.Connection) -> None:
+    if get_db_provider() == "postgres":
+        return
+
     conn.executescript(
         """
         PRAGMA foreign_keys = ON;
@@ -971,8 +1122,8 @@ def _upsert_obituary(conn: sqlite3.Connection, item: dict[str, Any], timestamp: 
     )
 
 
-def _ensure_post_queue_record(conn: sqlite3.Connection, obituary_id: str, timestamp: str) -> None:
-    conn.execute(
+def _ensure_post_queue_record(conn: sqlite3.Connection, obituary_id: str, timestamp: str) -> bool:
+    cursor = conn.execute(
         """
         INSERT INTO post_queue (obituary_id, status, created_at, updated_at)
         VALUES (?, 'new', ?, ?)
@@ -980,6 +1131,7 @@ def _ensure_post_queue_record(conn: sqlite3.Connection, obituary_id: str, timest
         """,
         (obituary_id, timestamp, timestamp),
     )
+    return int(cursor.rowcount or 0) > 0
 
 
 def ingest_selected_output(
@@ -1054,9 +1206,8 @@ def ingest_selected_output(
         _upsert_obituary(conn, item, timestamp=timestamp)
         upserted_obituaries += 1
 
-        before = conn.total_changes
-        _ensure_post_queue_record(conn, obituary_id=obituary_id, timestamp=timestamp)
-        if conn.total_changes > before:
+        was_inserted = _ensure_post_queue_record(conn, obituary_id=obituary_id, timestamp=timestamp)
+        if was_inserted:
             seeded_queue_records += 1
 
     for source in sources:

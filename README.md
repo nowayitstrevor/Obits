@@ -278,6 +278,37 @@ py development/scripts/sqlite_to_postgres_backfill.py --sqlite-path data/app.db 
 
 The script prints per-table source row counts and Postgres row counts so you can verify parity quickly.
 
+## Local Scraper To Neon (Recommended Hybrid Setup)
+
+Use this mode when your app runs on Railway but scraping runs on your local Windows machine.
+
+1. Ensure `.env` contains:
+	- `DB_CONNECTION_STRING=postgresql://...`
+	- `DATABASE_PROVIDER=postgres`
+2. Run local pipeline manually:
+```powershell
+& .\run_local_scrape_to_neon.ps1
+```
+
+Optional switches:
+```powershell
+# only ingest existing selected output JSON into Neon
+& .\run_local_scrape_to_neon.ps1 -SkipScrape -SkipBundle
+
+# custom scrape lookback window
+& .\run_local_scrape_to_neon.ps1 -LookbackDaysForStorage 7
+```
+
+Create a daily scheduled task:
+```powershell
+& .\register_local_scrape_task.ps1 -Time "07:00"
+```
+
+Run scheduled task now:
+```powershell
+schtasks /Run /TN "ObitScraper-LocalScrapeToNeon"
+```
+
 ## 🌐 Website Features
 
 - **Responsive Design**: Works on desktop and mobile
