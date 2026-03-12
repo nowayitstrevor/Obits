@@ -246,6 +246,38 @@ Phase 2 freshness tuning:
 - `obituaries_for_website.json` - Optimized for website integration
 - `data/app.db` - Local canonical SQLite store for feed, queue, and scrape status
 
+## PostgreSQL Migration (Neon)
+
+Run this when moving existing SQLite data to Neon Postgres.
+
+1. Create schema in Neon
+```sql
+-- In Neon SQL Editor, run:
+-- development/sql/postgres_bootstrap.sql
+```
+
+2. Install Python dependencies (includes Postgres driver)
+```powershell
+py -m pip install -r requirements.txt
+```
+
+3. Make sure `.env` has your Neon connection string
+```env
+DB_CONNECTION_STRING=postgresql://...
+```
+
+4. Run one-time SQLite -> Postgres backfill
+```powershell
+py development/scripts/sqlite_to_postgres_backfill.py --sqlite-path data/app.db
+```
+
+Optional reset-and-reload mode:
+```powershell
+py development/scripts/sqlite_to_postgres_backfill.py --sqlite-path data/app.db --truncate-target
+```
+
+The script prints per-table source row counts and Postgres row counts so you can verify parity quickly.
+
 ## 🌐 Website Features
 
 - **Responsive Design**: Works on desktop and mobile

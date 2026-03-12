@@ -39,6 +39,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     env_bootstrap.load_env_file()
     args = parse_args()
+    provider = db_pipeline.get_db_provider()
     effective_db_path = Path(args.db_path).expanduser().resolve() if args.db_path else None
     result = db_pipeline.ingest_selected_output_file(
         output_path=Path(args.input),
@@ -47,13 +48,16 @@ def main() -> None:
         finished_at=args.finished_at,
     )
 
-    print("SQLite ingestion complete")
+    print(f"{provider.capitalize()} ingestion complete")
     print(f"  Run ID: {result['runId']}")
     print(f"  Obituaries upserted: {result['obituariesUpserted']}")
     print(f"  Queue records seeded: {result['queueRecordsSeeded']}")
     print(f"  Sources tracked: {result['sourcesTracked']}")
     print(f"  Status: {result['status']}")
-    print(f"  DB path: {effective_db_path or db_pipeline.get_db_path()}")
+    if provider == "postgres":
+        print("  Target: DB_CONNECTION_STRING/DATABASE_URL")
+    else:
+        print(f"  DB path: {effective_db_path or db_pipeline.get_db_path()}")
 
 
 if __name__ == "__main__":

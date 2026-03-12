@@ -28,9 +28,9 @@ The app already has a working end-to-end operational baseline:
   - run due scheduled items
 - Daily scraping automation exists through PowerShell + Task Scheduler scripts.
 
-## 2) Grounding Doc Alignment (Using SQLite)
+## 2) Grounding Doc Alignment (Transitioning to PostgreSQL)
 
-We will keep SQLite as the primary database for now and align naming/workflow to Grounding Doc behavior.
+PostgreSQL is now the target runtime database, with SQLite treated as a temporary source during migration. Neon provisioning and cutover planning are now priority work.
 
 Status mapping:
 
@@ -57,7 +57,7 @@ Field mapping:
 4. Strict failure cleanup now prevents orphan photo posts when comment publish fails; remaining work is capped retry policy and clearer failure badges/triage UX.
 5. Deduplication rule from Grounding Doc (full_name + dod within 30-day window) is not yet implemented as an ingest gate.
 6. `confidence_score` and auto-stage/auto-schedule suggestions are not yet implemented.
-7. Grounding Doc target database is PostgreSQL; current system is SQLite-first and needs a migration plan/execution phase.
+7. Grounding Doc target database is PostgreSQL; current system is SQLite-first and now needs an active Neon-first migration and cutover execution phase.
 
 ## 4) Future Additions and Changes
 
@@ -180,20 +180,55 @@ Done when:
 - Duplicate candidates are surfaced before entering primary queue.
 - High-confidence records are clearly suggested, not auto-posted by default.
 
+## Phase G - PostgreSQL Migration and Neon Cutover
+
+Goal: move persistence from local SQLite to managed PostgreSQL on Neon with minimal downtime and clear rollback.
+
+Changes:
+
+- Provision Neon project (production + dev branch) and create app-specific credentials.
+- Add environment configuration for Postgres:
+  - `DATABASE_URL`
+  - `DATABASE_URL_READONLY` (optional)
+  - `DATABASE_PROVIDER=postgres`
+- Define schema parity migration from SQLite to Postgres for:
+  - queue tables
+  - audit/history tables
+  - worker status/lock tables
+- Add migration scripts:
+  - schema bootstrap in Postgres
+  - one-time SQLite -> Postgres backfill
+  - row-count and checksum validation report
+- Add compatibility layer in data access code so app can run in:
+  - sqlite mode (temporary fallback)
+  - postgres mode (target)
+- Run staged cutover:
+  1) freeze writes briefly
+  2) final delta copy
+  3) switch app `DATABASE_PROVIDER` to `postgres`
+  4) run smoke + publish flow validation
+- Define rollback plan to temporarily re-enable SQLite mode if severe issues occur.
+
+Done when:
+
+- App API, worker, and admin flows run against Neon Postgres without functional regressions.
+- Publish queue transitions and audit records match pre-cutover behavior.
+- SQLite is no longer used for primary writes.
+
 ## 5) Implementation Order (Recommended)
 
-1. Phase B (Staged editing suite)
-2. Phase E (Failure recovery)
-3. Phase C (Continuous worker)
-4. Phase D (Facebook sandbox integration)
+1. Phase G (PostgreSQL migration + Neon provisioning and cutover)
+2. Phase E (Failure recovery hardening while migrating)
+3. Phase C (Continuous worker validation on Postgres)
+4. Phase D (Facebook sandbox integration regression pass)
 5. Phase F (Dedupe + confidence scoring)
-6. Phase A polish (label harmonization and docs cleanup)
+6. Phase B and A polish (editing UX + label harmonization/docs cleanup)
 
 Reason for this order:
 
-- Editing + recovery protect quality first.
-- Worker + sandbox integration unlocks automation safely.
-- Dedupe/scoring then reduce manual effort and improve throughput.
+- Database foundation first prevents duplicate effort and schema churn.
+- Recovery and worker validation reduce operational risk during cutover.
+- Dedupe/scoring and UX polish follow once storage layer is stable.
 
 ## 6) Immediate Next Sprint Backlog
 
@@ -205,9 +240,11 @@ Reason for this order:
   - Python-native `.env` loading for server/worker startup to avoid shell-specific environment drift
 
 - Still open:
+  - provision Neon Postgres project, roles, and secure connection strings
+  - Postgres schema bootstrap + SQLite backfill/validation scripts
+  - app-level DB provider switch and smoke tests in `DATABASE_PROVIDER=postgres` mode
   - dedupe gate (name + DOD within 30 days) and duplicate candidate flags at ingest
   - `confidence_score` and suggestion flags (`suggest_auto_stage`, `suggest_auto_schedule`) as non-blocking hints
-  - PostgreSQL migration plan and compatibility layer (schema parity, repository abstraction, migration scripts)
   - integration test checklist for:
     - publish preflight endpoint (lightweight + deep)
     - strict publish success path (photo + comment)
@@ -217,9 +254,24 @@ Reason for this order:
 
 ## 7) Non-Goals Right Now
 
-- PostgreSQL migration (explicitly deferred while SQLite remains stable).
+- Full multi-region or high-availability topology before first successful Neon cutover.
 - Fully autonomous auto-scheduling without human review.
 - Replacing existing scraper stack.
+
+## 12) Neon Setup Checklist (Immediate)
+
+1. Create Neon project and choose region close to app runtime.
+2. Create at least two branches/environments:
+  - `dev`
+  - `prod`
+3. Create app user with least privileges required for runtime.
+4. Store connection strings in environment/secrets (do not commit credentials).
+5. Enable required SSL mode in connection string.
+6. Run schema bootstrap script against `dev` first.
+7. Run SQLite backfill into `dev` and verify row counts by table.
+8. Run app + worker smoke tests against `dev` Postgres.
+9. Repeat schema/bootstrap/backfill for `prod` during planned cutover window.
+10. Switch runtime `DATABASE_PROVIDER=postgres` and monitor publish + queue transitions for first 24 hours.
 
 ## 8) Success Metrics
 
